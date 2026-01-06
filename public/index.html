@@ -3,125 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crunchy Waffle | Admin & Menu</title>
+    <title>Crunchy Waffle | Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-yellow-50 font-sans">
 
-    <div class="max-w-xl mx-auto mt-10 p-8 bg-white shadow-lg rounded-lg">
-        <h2 class="text-2xl font-bold mb-6 text-yellow-700">🧇 Admin Dashboard</h2>
+    <div class="max-w-xl mx-auto mt-10 p-8 bg-white shadow-lg rounded-2xl border-t-8 border-yellow-600">
+        <h2 class="text-3xl font-black mb-6 text-yellow-800 text-center">🧇 CRUNCHY ADMIN</h2>
         
-        <form id="waffleForm">
-            <input type="text" id="name" placeholder="Waffle Name" class="w-full p-2 mb-4 border rounded" required>
-            <input type="number" id="price" placeholder="Price (₹)" class="w-full p-2 mb-4 border rounded" required>
-            <textarea id="description" placeholder="Description (e.g. Loaded with Nutella)" class="w-full p-2 mb-4 border rounded" required></textarea>
-            <input type="text" id="image" placeholder="Image URL (Link)" class="w-full p-2 mb-4 border rounded" required>
+        <form id="waffleForm" class="space-y-4">
+            <input type="text" id="name" placeholder="Waffle Name" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none" required>
+            <input type="number" id="price" placeholder="Price (₹)" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none" required>
+            <textarea id="description" placeholder="Description (e.g. Loaded with Choco)" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none" required></textarea>
+            <input type="text" id="image" placeholder="Image URL (Direct Link)" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none" required>
             
-            <div class="bg-red-50 p-3 rounded mb-4 border border-red-100">
-                <label class="block text-sm font-bold mb-1 text-red-700">Admin Password:</label>
-                <input type="password" id="adminPassword" placeholder="Enter Password to Add/Remove" class="w-full p-2 border rounded focus:ring-2 focus:ring-red-500" required>
+            <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                <label class="block text-sm font-bold mb-1 text-red-700">Enter Admin Password:</label>
+                <input type="password" id="adminPassword" placeholder="Required to Add/Remove" class="w-full p-2 border border-red-200 rounded-lg focus:ring-2 focus:ring-red-500 outline-none" required>
             </div>
 
-            <button type="submit" class="w-full bg-yellow-600 text-white font-bold py-2 rounded hover:bg-yellow-700 transition shadow-md">
-                Add Waffle to Menu
+            <button type="submit" class="w-full bg-yellow-600 text-white font-bold py-4 rounded-xl hover:bg-yellow-700 transition transform hover:scale-105 shadow-lg">
+                🚀 ADD TO MENU
             </button>
         </form>
     </div>
 
-    <h2 class="text-center text-3xl font-bold mt-16 text-yellow-800 underline">Our Delicious Menu</h2>
-    <div id="menu" class="max-w-4xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 p-4">
-        </div>
+    <h2 class="text-center text-3xl font-bold mt-16 text-yellow-900">Our Delicious Menu</h2>
+
+    <div id="menu" class="max-w-5xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-4"></div>
 
     <script>
         const form = document.getElementById('waffleForm');
-        
-        // --- FUNCTION 1: Load All Waffles ---
+
         async function loadWaffles() {
             const res = await fetch('/api/waffles');
             const data = await res.json();
             const menu = document.getElementById('menu');
-            
-            // Yahan badlav kiya gaya hai WhatsApp aur Remove button ke liye
             menu.innerHTML = data.map(w => `
-                <div class="bg-white p-4 rounded-2xl shadow-md overflow-hidden border border-gray-100 flex flex-col justify-between">
+                <div class="bg-white p-5 rounded-3xl shadow-xl border border-gray-100 flex flex-col justify-between">
                     <div>
-                        <img src="${w.image}" class="h-52 w-full object-cover rounded-xl shadow-sm">
-                        <div class="mt-4">
-                            <h3 class="text-xl font-bold text-gray-800">${w.name}</h3>
-                            <p class="text-gray-600 text-sm mt-1 leading-relaxed">${w.description}</p>
-                            <p class="text-yellow-700 font-bold text-xl mt-3">₹${w.price}</p>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 flex flex-col gap-3">
-                        <a href="https://wa.me/918087749069?text=Hi, mujhe *${w.name}* order karna hai. Price: ₹${w.price}" 
-                           target="_blank" 
-                           class="block w-full bg-green-500 text-white text-center font-bold py-3 rounded-xl hover:bg-green-600 transition shadow-sm">
-                           Order on WhatsApp 🟢
-                        </a>
-
-                        <button onclick="deleteWaffle('${w._id}')" class="text-red-400 text-xs font-medium hover:text-red-600 transition underline">
-                            Remove from Menu
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // --- FUNCTION 2: Secure Delete ---
-        async function deleteWaffle(id) {
-            const pass = document.getElementById('adminPassword').value;
-            if (!pass) return alert("Pehle Admin Password bhariye!");
-
-            if (confirm("Kya aap ise sach mein menu se hatana chahte hain?")) {
-                const res = await fetch(\`/api/waffles/\${id}\`, {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ adminPassword: pass })
-                });
-
-                if (res.ok) {
-                    alert("Waffle removed!");
-                    loadWaffles();
-                } else {
-                    alert("❌ Galat Password! Access Denied.");
-                }
-            }
-        }
-
-        // --- FUNCTION 3: Add Waffle via Form ---
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const pass = document.getElementById('adminPassword').value;
-            
-            const newWaffle = {
-                name: document.getElementById('name').value,
-                price: document.getElementById('price').value,
-                description: document.getElementById('description').value,
-                image: document.getElementById('image').value,
-                adminPassword: pass
-            };
-
-            const res = await fetch('/api/waffles', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newWaffle)
-            });
-
-            if (res.status === 401) {
-                alert("❌ Galat Password! Waffle add nahi hua.");
-            } else if (res.ok) {
-                alert("✅ Waffle Added Successfully!");
-                form.reset();
-                document.getElementById('adminPassword').value = pass; 
-                loadWaffles();
-            } else {
-                alert("❌ Kuch error aaya. Please try again.");
-            }
-        });
-
-        // Initialize Menu
-        loadWaffles();
-    </script>
-</body>
-</html>
+                        <img src="${w.image}" class="h-52 w-full object-cover rounded-2xl mb-4" onerror="this.src='https://via.placeholder.com/300?text=Check+Image+Link'">
+                        <h3 class="text-2xl font-bold text-gray-800">${w.name}</h3>
+                        <p class="text-gray-500 text-sm mt-2 leading-relaxed">${w.description || 'Tasty Waffle'}</p>
+                        <p class="text-yellow-700 font-black text
