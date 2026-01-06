@@ -8,8 +8,7 @@ app.use(cors());
 app.use(express.static('public'));
 
 // 1. Database Connection (Aapka wala link)
-const dbURI = 'mongodb+srv://waffle:Waffle123@cluster0.gy0mylx.mongodb.net/crunchyWaffle?retryWrites=true&w=majority';
-
+const dbURI = process.env.MONGO_URI || 'mongodb+srv://waffle:Waffle123@cluster0.gy0mylx.mongodb.net/crunchyWaffle?retryWrites=true&w=majority';
 mongoose.connect(dbURI)
   .then(() => console.log("✅ FINALLY! Crunchy Waffle DB Connect Ho Gaya!"))
   .catch((err) => console.log("❌ Connection Error:", err.message));
