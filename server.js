@@ -43,14 +43,23 @@ app.get('/api/waffles', async (req, res) => {
     res.json(waffles);
 });
 
-// POST: Naya Waffle add karne ke liye
+// server.js mein isse replace karein
 app.post('/api/waffles', async (req, res) => {
+    const { name, price, description, image, adminPassword } = req.body;
+    
+    // Render se password uthayega ya default 'admin123' use karega
+    const correctPassword = process.env.ADMIN_PASSWORD || 'admin123';
+
+    if (adminPassword !== correctPassword) {
+        return res.status(401).json({ message: 'Galat Password! Aap waffle add nahi kar sakte.' });
+    }
+
     try {
-        const newWaffle = new Waffle(req.body);
+        const newWaffle = new Waffle({ name, price, description, image });
         await newWaffle.save();
-        res.json({ message: "Waffle added!" });
+        res.status(201).json(newWaffle);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(400).json({ message: err.message });
     }
 });
 

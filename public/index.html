@@ -3,77 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crunchy Waffle | Admin Dashboard</title>
+    <title>Crunchy Waffle Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-orange-50 font-sans">
-    
-    <div class="max-w-xl mx-auto mt-10 p-8 bg-white rounded-3xl shadow-2xl border-2 border-orange-200">
-        <h2 class="text-2xl font-black text-amber-900 mb-6 text-center underline decoration-orange-500">Admin Panel: Add New Waffle</h2>
-        <form id="waffleForm" class="space-y-4">
-            <input type="text" id="name" placeholder="Waffle Name (e.g. Strawberry Heaven)" class="w-full p-3 border rounded-xl outline-orange-500" required>
-            <input type="number" id="price" placeholder="Price (₹)" class="w-full p-3 border rounded-xl outline-orange-500" required>
-            <input type="text" id="image" placeholder="Image URL (Link)" class="w-full p-3 border rounded-xl outline-orange-500" required>
-            <button type="submit" class="w-full bg-orange-500 text-white font-bold py-3 rounded-xl hover:bg-orange-600 shadow-lg">Add to Menu 🧇</button>
+<body class="bg-yellow-50 font-sans">
+
+    <div class="max-w-xl mx-auto mt-10 p-8 bg-white shadow-lg rounded-lg">
+        <h2 class="text-2xl font-bold mb-6 text-yellow-700">🧇 Add New Waffle</h2>
+        
+        <form id="waffleForm">
+            <input type="text" id="name" placeholder="Waffle Name" class="w-full p-2 mb-4 border rounded" required>
+            <input type="number" id="price" placeholder="Price" class="w-full p-2 mb-4 border rounded" required>
+            <textarea id="description" placeholder="Description" class="w-full p-2 mb-4 border rounded" required></textarea>
+            <input type="text" id="image" placeholder="Image URL" class="w-full p-2 mb-4 border rounded" required>
+            
+            <div class="bg-gray-100 p-3 rounded mb-4">
+                <label class="block text-sm font-bold mb-1 text-gray-600">Admin Security:</label>
+                <input type="password" id="adminPassword" placeholder="Enter Admin Password" class="w-full p-2 border border-red-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500" required>
+            </div>
+
+            <button type="submit" class="w-full bg-yellow-600 text-white font-bold py-2 rounded hover:bg-yellow-700 transition">
+                Add Waffle to Menu
+            </button>
         </form>
     </div>
 
-    <hr class="my-12 border-orange-200">
-
-    <main class="max-w-6xl mx-auto px-4 pb-20">
-        <h2 class="text-4xl font-black text-center text-amber-950 mb-12 italic">Live Menu from Database 🍨</h2>
-        <div id="waffle-list" class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            </div>
-    </main>
+    <div id="menu" class="max-w-4xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+        </div>
 
     <script>
-        // Data Load karne ka function
-        async function fetchWaffles() {
-            const response = await fetch('/api/waffles');
-            const waffles = await response.json();
-            const list = document.getElementById('waffle-list');
-            list.innerHTML = ''; 
-
-            waffles.forEach(waffle => {
-                list.innerHTML += `
-                    <div class="bg-white p-6 rounded-3xl shadow-xl border-b-8 border-orange-400">
-                        <img src="${waffle.image}" class="rounded-2xl mb-4 w-full h-48 object-cover">
-                        <h3 class="text-2xl font-bold text-amber-900">${waffle.name}</h3>
-                        <p class="text-orange-600 text-xl font-black mt-2">₹${waffle.price}</p>
-                        <button onclick="deleteWaffle('${waffle._id}')" class="mt-4 text-red-500 font-bold hover:underline">Remove Item 🗑️</button>
+        const form = document.getElementById('waffleForm');
+        
+        // Waffles Load Karne ka Function
+        async function loadWaffles() {
+            const res = await fetch('/api/waffles');
+            const data = await res.json();
+            const menu = document.getElementById('menu');
+            menu.innerHTML = data.map(w => `
+                <div class="bg-white p-4 rounded-xl shadow-md overflow-hidden">
+                    <img src="${w.image}" class="h-48 w-full object-cover rounded-lg">
+                    <div class="mt-4">
+                        <h3 class="text-xl font-bold">${w.name}</h3>
+                        <p class="text-gray-600 text-sm mt-1">${w.description}</p>
+                        <p class="text-yellow-700 font-bold mt-2">₹${w.price}</p>
                     </div>
-                `;
-            });
+                </div>
+            `).join('');
         }
 
-        // Form Submit function
-        document.getElementById('waffleForm').addEventListener('submit', async (e) => {
+        // Naya Waffle Add Karne ka Function
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const data = {
+            
+            const newWaffle = {
                 name: document.getElementById('name').value,
                 price: document.getElementById('price').value,
-                image: document.getElementById('image').value
+                description: document.getElementById('description').value,
+                image: document.getElementById('image').value,
+                adminPassword: document.getElementById('adminPassword').value // Password bhej rahe hain
             };
 
-            await fetch('/api/waffles', {
+            const res = await fetch('/api/waffles', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify(newWaffle)
             });
 
-            document.getElementById('waffleForm').reset();
-            fetchWaffles();
+            if (res.status === 401) {
+                alert("❌ Galat Password! Aapko ijazat nahi hai.");
+            } else if (res.ok) {
+                alert("✅ Waffle Successfully Add Ho Gaya!");
+                form.reset();
+                loadWaffles();
+            } else {
+                alert("❌ Kuch gadbad ho gayi!");
+            }
         });
 
-        // Delete function
-        async function deleteWaffle(id) {
-            if(confirm("Kya aap is waffle ko menu se hatana chahte hain?")) {
-                await fetch('/api/waffles/' + id, { method: 'DELETE' });
-                fetchWaffles();
-            }
-        }
-
-        fetchWaffles();
+        loadWaffles();
     </script>
 </body>
 </html>
