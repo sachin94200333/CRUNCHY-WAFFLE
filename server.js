@@ -66,8 +66,15 @@ app.post('/api/waffles', async (req, res) => {
 // 5. Server Start
 const PORT = 5000;
 app.delete('/api/waffles/:id', async (req, res) => {
+    const { adminPassword } = req.body;
+    const correctPassword = process.env.ADMIN_PASSWORD || 'admin123';
+
+    if (adminPassword !== correctPassword) {
+        return res.status(401).json({ message: 'Galat Password!' });
+    }
+
     await Waffle.findByIdAndDelete(req.params.id);
-    res.json({ message: "Deleted" });
+    res.json({ message: 'Waffle removed' });
 });
 app.listen(PORT, () => {
     console.log(`🚀 Server chalu hai: http://localhost:${PORT}`);
