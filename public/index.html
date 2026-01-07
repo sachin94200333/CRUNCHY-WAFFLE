@@ -82,15 +82,21 @@
     </div>
 
     <section class="max-w-4xl mx-auto py-20 px-6">
-        <div class="glass p-10 rounded-[2.5rem] border border-zinc-800">
-            <h2 class="text-2xl font-black italic text-red-600 mb-6 uppercase">Message Admin</h2>
-     <form onsubmit="sendMessage(event)" class="space-y-4">
-    <input type="text" id="qName" placeholder="Your Name" required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600 transition-all">
-    <textarea id="qMsg" placeholder="Enter message..." required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600 transition-all h-32"></textarea>
-    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl uppercase italic tracking-widest transition-all">
-        SEND TO ADMIN
-    </button>
-</form>
+    <div class="glass p-10 rounded-[2.5rem] border border-zinc-800">
+        <h2 class="text-2xl font-black italic text-red-600 mb-6 uppercase tracking-tighter">Message Admin</h2>
+        
+        <form onsubmit="sendMessage(event)" class="space-y-4">
+            <input type="text" id="qName" placeholder="Your Name" required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600 transition-all">
+            <textarea id="qMsg" placeholder="Enter message..." required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600 transition-all h-32"></textarea>
+            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl uppercase italic tracking-widest transition-all shadow-lg shadow-red-600/20">
+                SEND TO ADMIN
+            </button>
+        </form>
+        </div>
+</section>
+
+<div id="menu-container">
+    </div>
         </div>
     </section>
 
