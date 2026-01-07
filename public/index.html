@@ -3,91 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crunchy Waffle | Official</title>
+    <title>Crunchy Waffle | Premium Belgian Taste</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @keyframes zoomUpDown { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .hero-zoom { animation: zoomUpDown 10s infinite ease-in-out; }
+        @keyframes zoomUpDown { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .hero-zoom { animation: zoomUpDown 8s infinite ease-in-out; }
         .whatsapp-btn { position: fixed; bottom: 30px; right: 30px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 35px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 1000; transition: 0.3s; }
-        body { background-color: #000; color: white; scroll-behavior: smooth; }
+        body { background-color: #000; color: white; scroll-behavior: smooth; font-family: 'Inter', sans-serif; }
+        .kfc-gradient { background: linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0.4)); }
     </style>
 </head>
 <body>
 
-    <a href="https://wa.me/91XXXXXXXXXX" target="_blank" class="whatsapp-btn">
+    <a href="https://wa.me/91XXXXXXXXXX" target="_blank" class="whatsapp-btn animate__animated animate__bounceInUp">
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <header class="relative h-screen flex items-center justify-center overflow-hidden">
+    <header class="relative h-screen flex items-center justify-center overflow-hidden border-b-8 border-red-600">
         <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1562435503-903ba7ebaf78?q=80&w=2070" class="w-full h-full object-cover opacity-50 hero-zoom">
+            <img src="https://images.unsplash.com/photo-1562435503-903ba7ebaf78?q=80&w=2070" class="w-full h-full object-cover opacity-40 hero-zoom">
+            <div class="absolute inset-0 kfc-gradient"></div>
         </div>
-        <div class="relative z-10 text-center">
-            <div id="live-clock" class="text-yellow-500 font-mono text-xl mb-4 tracking-tighter"></div>
-            <h1 class="text-7xl md:text-9xl font-black italic text-red-600 drop-shadow-2xl animate__animated animate__fadeInDown">CRUNCHY WAFFLE</h1>
-            <p class="text-xl mt-4 tracking-widest text-white uppercase animate__animated animate__fadeInUp">Premium Crispy Waffles</p>
+        <div class="relative z-10 text-center px-4">
+            <div id="live-clock" class="text-yellow-500 font-mono text-xl mb-6 tracking-[0.3em] animate__animated animate__fadeIn"></div>
+            
+            <h1 class="text-6xl md:text-9xl font-black italic text-red-600 drop-shadow-[0_10px_10px_rgba(0,0,0,1)] animate__animated animate__zoomIn">CRUNCHY WAFFLE</h1>
+            
+            <p class="text-lg md:text-2xl mt-6 tracking-[0.5em] font-light text-white uppercase animate__animated animate__fadeInUp">
+                Serving Happiness Since <span class="text-red-600 font-bold">2024</span>
+            </p>
         </div>
     </header>
 
-    <section class="max-w-7xl mx-auto py-20 px-6">
-        <h2 class="text-4xl font-black mb-12 italic border-l-8 border-red-600 pl-6">OUR MENU</h2>
-        <div id="waffle-list" class="grid grid-cols-1 md:grid-cols-3 gap-10"></div>
+    <section class="max-w-7xl mx-auto py-24 px-6">
+        <h2 class="text-5xl font-black mb-16 italic border-l-8 border-red-600 pl-6 uppercase tracking-tighter">Legendary Menu</h2>
+        <div id="waffle-list" class="grid grid-cols-1 md:grid-cols-3 gap-12"></div>
     </section>
 
-    <footer class="bg-zinc-900 pt-20 pb-10">
+    <footer class="bg-zinc-900 pt-24 pb-12">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-black italic text-red-600">ABOUT US</h2>
-                <p id="journey-text" class="mt-6 text-zinc-400 italic text-lg max-w-3xl mx-auto"></p>
+            <div class="text-center mb-20">
+                <h2 class="text-4xl font-black italic text-red-600 uppercase tracking-widest">Our Story</h2>
+                <p id="journey-text" class="mt-8 text-zinc-400 italic text-xl leading-relaxed max-w-4xl mx-auto"></p>
             </div>
             
-            <h3 class="text-center text-2xl font-bold mb-10 text-white tracking-widest uppercase">Meet Our Squad</h3>
-            <div id="team-grid" class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center"></div>
+            <div id="team-grid" class="grid grid-cols-1 md:grid-cols-3 gap-16 text-center"></div>
             
-            <div class="mt-20 border-t border-zinc-800 pt-8 text-center text-zinc-600 text-sm">
-                &copy; 2026 Crunchy Waffle. Made with ❤️ for Waffle Lovers.
+            <div class="mt-24 border-t border-zinc-800 pt-10 text-center text-zinc-600 text-sm tracking-widest uppercase">
+                &copy; 2026 Crunchy Waffle • All Rights Reserved
             </div>
         </div>
     </footer>
 
     <script>
+        // Real-time Clock function
         function updateClock() {
             const now = new Date();
-            document.getElementById('live-clock').innerText = now.toLocaleString('en-IN', { hour12: true });
+            document.getElementById('live-clock').innerText = now.toLocaleString('en-IN', { 
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true 
+            }).toUpperCase();
         }
         setInterval(updateClock, 1000);
 
         async function init() {
-            // Load Menu
+            // Fetch Menu
             const wRes = await fetch('/api/waffles');
             const waffles = await wRes.json();
             document.getElementById('waffle-list').innerHTML = waffles.map(w => `
-                <div class="bg-zinc-800 rounded-3xl overflow-hidden border border-zinc-700 hover:border-red-600 transition duration-500">
-                    <img src="${w.image}" class="w-full h-64 object-cover">
-                    <div class="p-6 text-center">
-                        <h3 class="text-2xl font-black italic uppercase">${w.name}</h3>
-                        <p class="text-zinc-500 text-sm my-2">${w.description}</p>
-                        <p class="text-3xl font-black text-red-600">₹${w.price}</p>
+                <div class="group bg-zinc-800 rounded-[2.5rem] overflow-hidden border border-zinc-700 hover:border-red-600 transition-all duration-500 shadow-2xl">
+                    <div class="overflow-hidden">
+                        <img src="${w.image}" class="w-full h-80 object-cover group-hover:scale-110 transition duration-700">
+                    </div>
+                    <div class="p-8 text-center">
+                        <h3 class="text-3xl font-black italic uppercase">${w.name}</h3>
+                        <p class="text-zinc-500 text-sm my-4">${w.description || 'Freshly Baked Belgian Waffle'}</p>
+                        <div class="flex justify-center items-center gap-4">
+                            <span class="text-4xl font-black text-red-600">₹${w.price}</span>
+                        </div>
                     </div>
                 </div>`).join('');
 
-            // Load Team & About
+            // Fetch About & Team
             const aRes = await fetch('/api/about');
             const data = await aRes.json();
             const team = [
                 { n: data.ceoName, p: data.ceoPhoto, r: 'CEO & Founder', c: 'border-yellow-500' },
                 { n: data.tm1Name, p: data.tm1Photo, r: 'Master Chef', c: 'border-red-600' },
-                { n: data.tm2Name, p: data.tm2Photo, r: 'Manager', c: 'border-red-600' }
+                { n: data.tm2Name, p: data.tm2Photo, r: 'Operations Head', c: 'border-red-600' }
             ];
             document.getElementById('team-grid').innerHTML = team.map(m => `
-                <div>
-                    <img src="${m.p || 'https://via.placeholder.com/150'}" class="w-40 h-40 rounded-full mx-auto object-cover border-4 ${m.c}">
-                    <h4 class="text-xl font-black mt-4 uppercase">${m.n || 'TEAM'}</h4>
-                    <p class="text-red-600 text-xs font-bold uppercase">${m.r}</p>
+                <div class="animate__animated animate__fadeInUp">
+                    <img src="${m.p || 'https://via.placeholder.com/300'}" class="w-48 h-48 rounded-full mx-auto object-cover border-4 ${m.c} shadow-[0_0_30px_rgba(239,68,68,0.2)]">
+                    <h4 class="text-2xl font-black mt-6 uppercase italic">${m.n || 'Legend'}</h4>
+                    <p class="text-red-600 text-sm font-bold tracking-[0.2em] uppercase mt-2">${m.r}</p>
                 </div>`).join('');
-            document.getElementById('journey-text').innerText = data.journey || "Hamari journey waffles ke crunch se shuru hui thi...";
+            document.getElementById('journey-text').innerText = data.journey || "Creating crispy memories since the very beginning.";
         }
         init();
         updateClock();
