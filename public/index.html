@@ -3,76 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crunchy Waffle | The Crispy King</title>
+    <title>Crunchy Waffle | Official</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @keyframes zoomUpDown { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .hero-zoom { animation: zoomUpDown 5s infinite ease-in-out; }
-        .glass-card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        .hero-zoom { animation: zoomUpDown 10s infinite ease-in-out; }
+        .whatsapp-btn { position: fixed; bottom: 30px; right: 30px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 35px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 1000; transition: 0.3s; }
+        body { background-color: #000; color: white; scroll-behavior: smooth; }
     </style>
 </head>
-<body class="bg-zinc-950 text-white font-sans">
+<body>
 
-    <header class="relative h-screen flex items-center justify-center overflow-hidden border-b-8 border-red-600">
+    <a href="https://wa.me/91XXXXXXXXXX" target="_blank" class="whatsapp-btn">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <header class="relative h-screen flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1562435503-903ba7ebaf78?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover opacity-40 hero-zoom">
+            <img src="https://images.unsplash.com/photo-1562435503-903ba7ebaf78?q=80&w=2070" class="w-full h-full object-cover opacity-50 hero-zoom">
         </div>
-        <div class="relative z-10 text-center animate__animated animate__zoomIn">
-            <h1 class="text-7xl md:text-9xl font-black italic text-red-600 drop-shadow-2xl">CRUNCHY WAFFLE</h1>
-            <p class="text-xl md:text-2xl mt-4 tracking-[0.5em] font-light text-yellow-500 uppercase">Premium Belgian Taste</p>
+        <div class="relative z-10 text-center">
+            <div id="live-clock" class="text-yellow-500 font-mono text-xl mb-4 tracking-tighter"></div>
+            <h1 class="text-7xl md:text-9xl font-black italic text-red-600 drop-shadow-2xl animate__animated animate__fadeInDown">CRUNCHY WAFFLE</h1>
+            <p class="text-xl mt-4 tracking-widest text-white uppercase animate__animated animate__fadeInUp">Premium Crispy Waffles</p>
         </div>
     </header>
 
     <section class="max-w-7xl mx-auto py-20 px-6">
-        <h2 class="text-5xl font-black mb-16 italic border-l-8 border-red-600 pl-6 uppercase tracking-tighter">Our Menu</h2>
-        <div id="waffle-list" class="grid grid-cols-1 md:grid-cols-3 gap-12">
-            </div>
+        <h2 class="text-4xl font-black mb-12 italic border-l-8 border-red-600 pl-6">OUR MENU</h2>
+        <div id="waffle-list" class="grid grid-cols-1 md:grid-cols-3 gap-10"></div>
     </section>
 
-    <section class="bg-zinc-900 py-24">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <h2 class="text-4xl font-black mb-20 italic">MEET THE SQUAD</h2>
-            <div id="team-grid" class="grid grid-cols-1 md:grid-cols-3 gap-16"></div>
-            <p id="journey-text" class="mt-20 text-zinc-500 italic text-xl max-w-4xl mx-auto border-t border-zinc-800 pt-10"></p>
+    <footer class="bg-zinc-900 pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-black italic text-red-600">ABOUT US</h2>
+                <p id="journey-text" class="mt-6 text-zinc-400 italic text-lg max-w-3xl mx-auto"></p>
+            </div>
+            
+            <h3 class="text-center text-2xl font-bold mb-10 text-white tracking-widest uppercase">Meet Our Squad</h3>
+            <div id="team-grid" class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center"></div>
+            
+            <div class="mt-20 border-t border-zinc-800 pt-8 text-center text-zinc-600 text-sm">
+                &copy; 2026 Crunchy Waffle. Made with ❤️ for Waffle Lovers.
+            </div>
         </div>
-    </section>
+    </footer>
 
     <script>
-        async function loadSite() {
-            // Waffles fetch
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('live-clock').innerText = now.toLocaleString('en-IN', { hour12: true });
+        }
+        setInterval(updateClock, 1000);
+
+        async function init() {
+            // Load Menu
             const wRes = await fetch('/api/waffles');
             const waffles = await wRes.json();
             document.getElementById('waffle-list').innerHTML = waffles.map(w => `
-                <div class="group relative bg-zinc-900 rounded-[2rem] overflow-hidden border border-zinc-800 hover:border-red-600 transition-all duration-500">
-                    <img src="${w.image}" class="w-full h-80 object-cover group-hover:scale-110 transition duration-700">
-                    <div class="p-8 bg-zinc-900/90 backdrop-blur-md">
-                        <h3 class="text-3xl font-black italic uppercase">${w.name}</h3>
-                        <p class="text-zinc-500 mt-2">${w.description}</p>
-                        <div class="mt-8 flex justify-between items-center">
-                            <span class="text-4xl font-black text-red-600">₹${w.price}</span>
-                            <button class="bg-red-600 text-white px-8 py-3 rounded-full font-bold hover:bg-white hover:text-red-600 transition-colors">ORDER NOW</button>
-                        </div>
+                <div class="bg-zinc-800 rounded-3xl overflow-hidden border border-zinc-700 hover:border-red-600 transition duration-500">
+                    <img src="${w.image}" class="w-full h-64 object-cover">
+                    <div class="p-6 text-center">
+                        <h3 class="text-2xl font-black italic uppercase">${w.name}</h3>
+                        <p class="text-zinc-500 text-sm my-2">${w.description}</p>
+                        <p class="text-3xl font-black text-red-600">₹${w.price}</p>
                     </div>
                 </div>`).join('');
 
-            // About fetch
+            // Load Team & About
             const aRes = await fetch('/api/about');
             const data = await aRes.json();
             const team = [
-                { n: data.ceoName, p: data.ceoPhoto, r: 'The Visionary (CEO)', c: 'border-yellow-500' },
+                { n: data.ceoName, p: data.ceoPhoto, r: 'CEO & Founder', c: 'border-yellow-500' },
                 { n: data.tm1Name, p: data.tm1Photo, r: 'Master Chef', c: 'border-red-600' },
                 { n: data.tm2Name, p: data.tm2Photo, r: 'Manager', c: 'border-red-600' }
             ];
             document.getElementById('team-grid').innerHTML = team.map(m => `
-                <div class="animate__animated animate__fadeInUp">
-                    <img src="${m.p || 'https://via.placeholder.com/300'}" class="w-48 h-48 rounded-full mx-auto object-cover border-4 ${m.c} shadow-[0_0_30px_rgba(239,68,68,0.3)]">
-                    <h4 class="text-2xl font-black mt-6 italic uppercase">${m.n || 'Coming Soon'}</h4>
-                    <p class="text-red-600 font-bold tracking-widest text-sm uppercase mt-2">${m.r}</p>
+                <div>
+                    <img src="${m.p || 'https://via.placeholder.com/150'}" class="w-40 h-40 rounded-full mx-auto object-cover border-4 ${m.c}">
+                    <h4 class="text-xl font-black mt-4 uppercase">${m.n || 'TEAM'}</h4>
+                    <p class="text-red-600 text-xs font-bold uppercase">${m.r}</p>
                 </div>`).join('');
-            document.getElementById('journey-text').innerText = data.journey || "Since Day 1, we only cared about the CRUNCH.";
+            document.getElementById('journey-text').innerText = data.journey || "Hamari journey waffles ke crunch se shuru hui thi...";
         }
-        loadSite();
+        init();
+        updateClock();
     </script>
 </body>
 </html>
