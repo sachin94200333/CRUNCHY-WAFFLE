@@ -1,81 +1,118 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
+require('dotenv').config();
 
 const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(cors());
-app.use(express.static('public'));
 
-// 1. Database Connection (Aapka wala link)
-const dbURI = process.env.MONGO_URI || 'mongodb+srv://waffle:Waffle123@cluster0.gy0mylx.mongodb.net/crunchyWaffle?retryWrites=true&w=majority';
-mongoose.connect(dbURI)
-  .then(() => console.log("✅ FINALLY! Crunchy Waffle DB Connect Ho Gaya!"))
-  .catch((err) => console.log("❌ Connection Error:", err.message));
+// Sabse Zaroori: Isse aapka naya 'public' folder website dikhayega
+app.use(express.static(path.join(__dirname, 'public')));
 
-// 2. Waffle Schema aur Model
+// MongoDB Connection
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log("MongoDB Connected... Crunchy Waffle is Live!  waffle"))
+.catch(err => console.log("MongoDB Connection Error: ", err));
+
+// --- DATA MODELS ---
+
+// 1. Waffle Menu Schema
 const waffleSchema = new mongoose.Schema({
     name: String,
     price: Number,
+    description: String,
     image: String
 });
 const Waffle = mongoose.model('Waffle', waffleSchema);
 
-// 3. Pehla Waffle daalne ka function (Optional Testing)
-const seedDB = async () => {
-    const count = await Waffle.countDocuments();
-    if(count === 0) {
-        await Waffle.create({
-            name: "Nutella Bliss",
-            price: 149,
-            image: "https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=800"
-        });
-        console.log("🍦 Pehla Waffle DB mein save ho gaya!");
-    }
-};
-seedDB();
+// 2. Customer Message Schema (Aapka naya Inbox)
+const messageSchema = new mongoose.Schema({
+    name: String,
+    email: String,
+    message: String,
+    date: { type: Date, default: Date.now }
+});
+const Message = mongoose.model('Message', messageSchema);
 
-// 4. API Routes (Inhe delete mat karna)
+// --- API ROUTES ---
 
-// GET: Menu dikhane ke liye
+// 1. Get All Waffles (Customer Menu ke liye)
 app.get('/api/waffles', async (req, res) => {
-    const waffles = await Waffle.find();
-    res.json(waffles);
+    try {
+        const waffles = await Waffle.find();
+        res.json(waffles);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
-// server.js mein isse replace karein
+// 2. Add Waffle (Sirf Admin ke liye - Password protected)
 app.post('/api/waffles', async (req, res) => {
-    const { name, price, description, image, adminPassword } = req.body;
+    const { adminPassword, name, price, description, image } = req.body;
     
-    // Render se password uthayega ya default 'admin123' use karega
-    const correctPassword = process.env.ADMIN_PASSWORD || 'admin123';
-
-    if (adminPassword !== correctPassword) {
-        return res.status(401).json({ message: 'Galat Password! Aap waffle add nahi kar sakte.' });
+    if (adminPassword !== process.env.ADMIN_PASSWORD) {
+        return res.status(401).json({ message: "Galat Password! Aap waffle add nahi kar sakte." });
     }
 
+    const newWaffle = new Waffle({ name, price, description, image });
     try {
-        const newWaffle = new Waffle({ name, price, description, image });
         await newWaffle.save();
-        res.status(201).json(newWaffle);
+        res.json(newWaffle);
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
 });
 
-// 5. Server Start
-const PORT = 5000;
+// 3. Delete Waffle (Sirf Admin ke liye)
 app.delete('/api/waffles/:id', async (req, res) => {
     const { adminPassword } = req.body;
-    const correctPassword = process.env.ADMIN_PASSWORD || 'admin123';
-
-    if (adminPassword !== correctPassword) {
-        return res.status(401).json({ message: 'Galat Password!' });
+    
+    if (adminPassword !== process.env.ADMIN_PASSWORD) {
+        return res.status(401).json({ message: "Unauthorized" });
     }
 
-    await Waffle.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Waffle removed' });
+    try {
+        await Waffle.findByIdAndDelete(req.params.id);
+        res.json({ message: "Waffle Deleted Successfully" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
-app.listen(PORT, () => {
-    console.log(`🚀 Server chalu hai: http://localhost:${PORT}`);
+
+// 4. Save Customer Message (Jab koi contact form bharega)
+app.post('/api/messages', async (req, res) => {
+    const { name, email, message } = req.body;
+    const newMessage = new Message({ name, email, message });
+    try {
+        await newMessage.save();
+        res.json({ message: "Aapka message mil gaya hai! Hum jald contact karenge." });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
 });
+
+// 5. Get All Messages (Sirf Admin dekh sakega)
+app.post('/api/admin/messages', async (req, res) => {
+    const { adminPassword } = req.body;
+    if (adminPassword !== process.env.ADMIN_PASSWORD) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+        const messages = await Message.find().sort({ date: -1 });
+        res.json(messages);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Catch-all route to serve index.html for any other requests
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
