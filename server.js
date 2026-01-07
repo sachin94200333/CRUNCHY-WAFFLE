@@ -35,6 +35,13 @@ const messageSchema = new mongoose.Schema({
     email: String,
     message: String,
     date: { type: Date, default: Date.now }
+    // 3. About Us Schema (CEO Settings)
+const aboutSchema = new mongoose.Schema({
+    ceoName: String,
+    ceoPhoto: String,
+    journey: String
+});
+const About = mongoose.model('About', aboutSchema);
 });
 const Message = mongoose.model('Message', messageSchema);
 
@@ -65,6 +72,31 @@ app.post('/api/waffles', async (req, res) => {
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
+});
+// --- Naya About Us API ---
+
+// 1. Get About info
+app.get('/api/about', async (req, res) => {
+    const about = await About.findOne();
+    res.json(about || { ceoName: "Sachin", ceoPhoto: "", journey: "Hamari shuruat..." });
+});
+
+// 2. Update About info (Admin Only)
+app.post('/api/about', async (req, res) => {
+    const { adminPassword, ceoName, ceoPhoto, journey } = req.body;
+    if (adminPassword !== process.env.ADMIN_PASSWORD) return res.status(401).send("Unauthorized");
+    
+    let about = await About.findOne();
+    if (about) {
+        about.ceoName = ceoName; 
+        about.ceoPhoto = ceoPhoto; 
+        about.journey = journey;
+        await about.save();
+    } else {
+        about = new About({ ceoName, ceoPhoto, journey });
+        await about.save();
+    }
+    res.json(about);
 });
 
 // 3. Delete Waffle (Sirf Admin ke liye)
