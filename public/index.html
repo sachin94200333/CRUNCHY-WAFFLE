@@ -27,10 +27,10 @@
                     <p id="nav-username" class="text-[9px] font-black text-white uppercase italic tracking-tighter"></p>
                     <p id="nav-wallet" class="text-[10px] font-bold text-green-500 tracking-widest">₹0.00</p>
                 </div>
-                <button onclick="logout()" class="text-zinc-500 hover:text-red-600 ml-2 transition-all"><i class="fas fa-sign-out-alt"></i></button>
+                <button onclick="logout()" class="text-zinc-500 hover:text-red-600 ml-2"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </div>
-        <button id="login-guest-btn" onclick="location.href='/auth.html'" class="glass px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-red-600 border border-zinc-800 transition-all">
+        <button id="login-guest-btn" onclick="location.href='/auth.html'" class="glass px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest text-zinc-400 border border-zinc-800">
             <i class="fas fa-user-circle mr-2"></i>Login / Register
         </button>
     </div>
@@ -38,6 +38,7 @@
     <header class="relative min-h-[500px] h-[60vh] flex flex-col items-center justify-center overflow-hidden border-b-2 border-red-600 bg-black">
         <div id="slideshow" class="absolute inset-0 z-0">
             <div class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1562435503-903ba7ebaf78?q=80&w=2070')"></div>
+            <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1590005176489-db2e714711fc?q=80&w=2071')"></div>
         </div>
 
         <div class="absolute top-4 right-4 z-20">
@@ -49,10 +50,11 @@
 
         <div class="relative z-10 text-center pt-10">
             <div class="flex items-center justify-center min-h-[150px]">
-                <img id="main-logo" src="/images/logo.png" class="drop-shadow-[0_10px_10px_rgba(255,0,0,0.3)] animate-pulse transition-all">
+                <img id="main-logo" src="/images/logo.png" class="drop-shadow-[0_10px_10px_rgba(255,0,0,0.3)] animate-pulse">
             </div>
             <div class="mt-4">
-                <h1 class="text-4xl md:text-7xl font-black italic text-red-600 uppercase tracking-tighter">Crunchy Waffle</h1>
+                <h1 class="text-4xl md:text-7xl font-black italic text-red-600 uppercase tracking-tighter leading-none">Crunchy Waffle</h1>
+                <p class="text-[8px] md:text-sm tracking-[0.3em] text-white/60 uppercase mt-2 italic font-bold">The Ultimate Waffle Experience</p>
             </div>
         </div>
     </header>
@@ -64,155 +66,146 @@
 
     <section id="history-section" class="max-w-7xl mx-auto py-16 px-4 hidden border-t border-zinc-900">
         <h2 class="text-2xl font-black mb-10 italic border-l-4 border-green-600 pl-4 uppercase">My Order History</h2>
-        <div id="order-history-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <p class="text-zinc-500 italic">No orders found.</p>
-        </div>
+        <div id="order-history-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
     </section>
 
     <div id="side-cart" class="cart-panel fixed top-0 right-0 h-full w-full md:w-96 p-8 shadow-2xl">
         <div class="flex justify-between items-center mb-8">
             <h2 class="text-2xl font-black italic text-red-600 uppercase">Your Cart</h2>
-            <button onclick="toggleCart()" class="text-4xl text-zinc-600 hover:text-white transition">&times;</button>
+            <button onclick="toggleCart()" class="text-4xl text-zinc-600">&times;</button>
         </div>
-        
-        <div id="cart-items" class="space-y-4 mb-4 overflow-y-auto h-[45vh] pr-2"></div>
-
+        <div id="cart-items" class="space-y-4 mb-4 overflow-y-auto h-[45vh]"></div>
         <div class="mb-6 flex gap-2">
-            <input type="text" id="vCodeInput" placeholder="Voucher Code" class="flex-grow bg-black border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600">
+            <input type="text" id="vCodeInput" placeholder="Voucher Code" class="flex-grow bg-black border border-zinc-800 p-3 rounded-xl text-white outline-none">
             <button onclick="applyVoucher()" class="bg-zinc-800 px-4 rounded-xl font-bold text-[10px] uppercase">Apply</button>
         </div>
-
-        <div class="border-t border-zinc-800 pt-6">
-            <div class="flex justify-between text-2xl font-black mb-6 uppercase italic tracking-tighter">
-                <span>Total:</span>
-                <span id="cart-total" class="text-red-600">₹0</span>
-            </div>
-            <button onclick="sendFinalOrder()" class="w-full bg-green-600 py-4 rounded-2xl font-black text-lg shadow-lg hover:bg-green-700 transition uppercase italic">
-                Confirm Order
-            </button>
+        <div class="border-t border-zinc-800 pt-6 text-2xl font-black flex justify-between uppercase italic">
+            <span>Total:</span><span id="cart-total" class="text-red-600">₹0</span>
         </div>
+        <button onclick="sendFinalOrder()" class="w-full bg-green-600 py-4 mt-6 rounded-2xl font-black uppercase italic tracking-widest">Confirm Order</button>
     </div>
 
+    <section class="max-w-4xl mx-auto py-20 px-6">
+        <div class="glass p-10 rounded-[2.5rem] border border-zinc-800">
+            <h2 class="text-2xl font-black italic text-red-600 mb-6 uppercase tracking-tighter">Message Admin</h2>
+            <form onsubmit="sendMessage(event)" class="space-y-4">
+                <input type="text" id="qName" placeholder="Your Name" required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600">
+                <textarea id="qMsg" placeholder="Enter message..." required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white h-32"></textarea>
+                <button type="submit" class="w-full bg-red-600 py-4 rounded-2xl font-black uppercase italic tracking-widest">SEND TO ADMIN</button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="bg-zinc-950 py-24 border-t border-zinc-900">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <h2 class="text-3xl font-black italic text-red-600 mb-6 uppercase">Our Journey</h2>
+            <p id="journey-text" class="text-zinc-400 italic text-lg leading-relaxed mb-16 max-w-4xl mx-auto"></p>
+            <div id="team-grid" class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center mb-20"></div>
+            <p onclick="location.href='/admin.html'" class="text-zinc-800 text-[10px]">&copy; 2026 CRUNCHY WAFFLE • Crafted with Passion</p>
+        </div>
+    </footer>
+
     <div onclick="toggleCart()" class="fixed bottom-8 right-8 bg-yellow-500 text-black p-4 rounded-full cursor-pointer z-[1001] shadow-2xl flex items-center gap-2 font-black">
-        <i class="fas fa-shopping-cart text-xl"></i>
-        <span id="cart-count">0</span>
+        <i class="fas fa-shopping-cart"></i><span id="cart-count">0</span>
     </div>
 
     <script>
-        let cart = [];
-        let discount = 0;
-        const ADMIN_NUM = "918087749069";
+        let cart = []; let discount = 0; const ADMIN_NUM = "918087749069";
         const currentUser = localStorage.getItem('user');
+
+        // Slideshow Logic (Restored)
+        let slideIndex = 0;
+        function nextSlide() {
+            const slides = document.querySelectorAll('.bg-slide');
+            slides[slideIndex].classList.remove('active');
+            slideIndex = (slideIndex + 1) % slides.length;
+            slides[slideIndex].classList.add('active');
+        }
+        setInterval(nextSlide, 5000);
 
         function logout() { localStorage.removeItem('user'); location.reload(); }
 
         async function applyVoucher() {
             const code = document.getElementById('vCodeInput').value;
-            const res = await fetch('/api/apply-voucher', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ code })
-            });
+            const res = await fetch('/api/apply-voucher', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ code }) });
             const data = await res.json();
-            if(res.ok) {
-                discount = data.discount;
-                alert(`Voucher Applied! Discount: ₹${discount}`);
-                updateUI();
-            } else { alert("Invalid Code!"); }
+            if(res.ok) { discount = data.discount; alert(`Voucher Applied! ₹${discount} Off`); updateUI(); } else { alert("Invalid!"); }
         }
 
         async function sendFinalOrder() {
             if(!cart.length) return;
             const total = cart.reduce((a, b) => a + (b.price * b.qty), 0) - discount;
-            
-            // 1. Save to History (Backend)
-            const orderData = {
-                username: currentUser || "Guest",
-                items: cart,
-                total: total,
-                status: 'Pending'
-            };
-            await fetch('/api/orders/create', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(orderData)
-            });
-
-            // 2. Open WhatsApp
-            let msg = `New Order from ${orderData.username}! 🧇\n\n*Items:*\n`;
-            cart.forEach(i => msg += `• ${i.name} (${i.qty}x)\n`);
-            msg += `\n*Total: ₹${total}*\nStatus: Pending Approval`;
+            const orderData = { username: currentUser || "Guest", items: cart, total: total };
+            await fetch('/api/orders/create', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(orderData) });
+            let msg = `Order from ${orderData.username}!\nTotal: ₹${total}`;
             window.open(`https://wa.me/${ADMIN_NUM}?text=${encodeURIComponent(msg)}`);
-            
-            cart = [];
-            updateUI();
-            toggleCart();
-            if(currentUser) loadHistory();
+            cart = []; updateUI(); toggleCart(); if(currentUser) loadHistory();
         }
 
         async function loadHistory() {
-            if(!currentUser) return;
-            document.getElementById('history-section').classList.remove('hidden');
             const res = await fetch(`/api/orders/user/${currentUser}`);
             const orders = await res.json();
+            document.getElementById('history-section').classList.remove('hidden');
             document.getElementById('order-history-list').innerHTML = orders.map(o => `
-                <div class="bg-zinc-900/50 p-5 rounded-3xl border border-zinc-800 flex justify-between items-center">
-                    <div>
-                        <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">${new Date(o.date).toLocaleDateString()}</p>
-                        <h4 class="text-white font-black uppercase text-sm italic">${o.items.map(i => i.name).join(', ')}</h4>
-                        <p class="text-red-600 font-black mt-1">₹${o.total}</p>
-                    </div>
-                    <span class="text-[9px] font-black px-3 py-1 rounded-full border border-red-600/30 text-red-600 uppercase italic">${o.status}</span>
-                </div>
-            `).join('');
-        }
-
-        function updateUI() {
-            const subtotal = cart.reduce((a, b) => a + (b.price * b.qty), 0);
-            const finalTotal = Math.max(0, subtotal - discount);
-            document.getElementById('cart-total').innerText = `₹${finalTotal}`;
-            document.getElementById('cart-count').innerText = cart.reduce((a, b) => a + b.qty, 0);
-            document.getElementById('cart-items').innerHTML = cart.map((i, idx) => `
-                <div class="flex justify-between items-center bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800">
-                    <div><p class="font-bold text-xs uppercase italic">${i.name}</p><p class="text-red-600 text-[10px] font-black">₹${i.price} x ${i.qty}</p></div>
-                    <button onclick="cart.splice(${idx},1);updateUI()" class="text-zinc-600 hover:text-red-600"><i class="fas fa-trash-alt"></i></button>
+                <div class="bg-zinc-900/50 p-5 rounded-3xl border border-zinc-800 flex justify-between">
+                    <div><h4 class="text-white font-black uppercase text-sm italic">${o.items.map(i => i.name).join(', ')}</h4><p class="text-red-600 font-black mt-1">₹${o.total}</p></div>
+                    <span class="text-[9px] font-black px-3 py-1 rounded-full border border-red-600/30 text-red-600 uppercase italic self-center">${o.status}</span>
                 </div>`).join('');
         }
 
-        // --- Standard functions ---
+        function updateCounter() { // Restored Timer Logic
+            const start = new Date('2024-08-22T00:00:00');
+            const diff = new Date() - start;
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff / 3600000) % 24);
+            const m = Math.floor((diff / 60000) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+            document.getElementById('live-counter').innerHTML = `<div>${d}d</div> : <div>${h}h</div> : <div>${m}m</div> : <div>${s}s</div>`;
+        }
+        setInterval(updateCounter, 1000);
+
         function toggleCart() { document.getElementById('side-cart').classList.toggle('cart-open'); }
         function addToCart(n, p) {
             const item = cart.find(i => i.name === n);
             if(item) item.qty++; else cart.push({name: n, price: p, qty: 1});
-            updateUI(); if(cart.length === 1) toggleCart();
+            updateUI(); toggleCart();
+        }
+
+        function updateUI() {
+            const sub = cart.reduce((a, b) => a + (b.price * b.qty), 0);
+            document.getElementById('cart-total').innerText = `₹${Math.max(0, sub - discount)}`;
+            document.getElementById('cart-count').innerText = cart.reduce((a, b) => a + b.qty, 0);
+            document.getElementById('cart-items').innerHTML = cart.map((i, idx) => `
+                <div class="flex justify-between items-center bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800">
+                    <div><p class="font-bold text-xs uppercase italic">${i.name}</p><p class="text-red-600 font-black">₹${i.price} x ${i.qty}</p></div>
+                    <button onclick="cart.splice(${idx},1);updateUI()" class="text-zinc-600"><i class="fas fa-trash-alt"></i></button>
+                </div>`).join('');
         }
 
         async function init() {
-            // Load Profile if logged in
+            updateCounter();
+            fetch('/api/get-logo').then(r => r.json()).then(d => {
+                document.documentElement.style.setProperty('--logo-w', d.width);
+                document.documentElement.style.setProperty('--logo-x', d.x);
+                document.documentElement.style.setProperty('--logo-y', d.y);
+            });
             if(currentUser) {
                 document.getElementById('user-logged-in').classList.remove('hidden');
                 document.getElementById('login-guest-btn').classList.add('hidden');
                 document.getElementById('nav-username').innerText = currentUser;
-                
-                // Fetch user data for Wallet
-                const res = await fetch('/api/get-users');
-                const users = await res.json();
-                const me = users.find(u => u.username === currentUser);
-                if(me) document.getElementById('nav-wallet').innerText = `₹${me.walletBalance || 0}`;
+                fetch('/api/get-users').then(r => r.json()).then(users => {
+                    const me = users.find(u => u.username === currentUser);
+                    if(me) document.getElementById('nav-wallet').innerText = `₹${me.walletBalance || 0}`;
+                });
                 loadHistory();
             }
-
-            // Normal menu load...
-            const wRes = await fetch('/api/waffles'); 
-            const waffles = await wRes.json();
-            document.getElementById('waffle-list').innerHTML = waffles.map(w => `
-                <div class="bg-zinc-900 rounded-[2rem] overflow-hidden border border-zinc-800 flex flex-col group">
-                    <img src="${w.image}" class="w-full h-36 md:h-64 object-cover group-hover:scale-110 transition duration-700">
-                    <div class="p-4 md:p-6 flex-grow flex flex-col justify-between">
-                        <div><h3 class="text-[10px] md:text-xl font-black italic uppercase truncate">${w.name}</h3><p class="text-red-600 font-black text-lg mt-1">₹${w.price}</p></div>
-                        <button onclick="addToCart('${w.name}', ${w.price})" class="w-full bg-red-600 text-white mt-4 py-3 rounded-xl font-bold text-[10px] md:text-sm uppercase transition hover:bg-white hover:text-red-600">Add To Cart</button>
-                    </div>
-                </div>`).join('');
+            const wRes = await fetch('/api/waffles'); const waffles = await wRes.json();
+            document.getElementById('waffle-list').innerHTML = waffles.map(w => `<div class="bg-zinc-900 rounded-[2rem] overflow-hidden border border-zinc-800 flex flex-col group"><img src="${w.image}" class="w-full h-36 md:h-64 object-cover group-hover:scale-110 transition duration-700"><div class="p-4 md:p-6 flex-grow flex flex-col justify-between"><div><h3 class="text-[10px] md:text-xl font-black italic uppercase truncate">${w.name}</h3><p class="text-red-600 font-black text-lg mt-1">₹${w.price}</p></div><button onclick="addToCart('${w.name}', ${w.price})" class="w-full bg-red-600 text-white mt-4 py-3 rounded-xl font-bold uppercase hover:bg-white hover:text-red-600 transition">Add To Cart</button></div></div>`).join('');
+            
+            const aRes = await fetch('/api/about'); const aData = await aRes.json();
+            document.getElementById('journey-text').innerText = aData.journey || "Since 2024.";
+            const team = [{n: aData.ceoName, r: "CEO", p: aData.ceoPhoto}, {n: aData.tm1Name, r: "Manager", p: aData.tm1Photo}, {n: aData.tm2Name, r: "Chef", p: aData.tm2Photo}];
+            document.getElementById('team-grid').innerHTML = team.map(m => `<div class="group"><div class="relative w-24 h-24 md:w-40 md:h-40 mx-auto mb-4"><img src="${m.p || 'https://via.placeholder.com/150'}" class="w-full h-full rounded-full object-cover border-4 border-zinc-900 group-hover:border-red-600 transition shadow-2xl"></div><h4 class="text-white font-black italic uppercase text-sm md:text-lg">${m.n || 'Team Member'}</h4><p class="text-red-600 font-bold text-[8px] uppercase tracking-[0.2em]">${m.r}</p></div>`).join('');
         }
         init();
     </script>
