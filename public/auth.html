@@ -11,33 +11,58 @@
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-6">
-    <div class="max-w-md w-full glass p-8 rounded-[2.5rem] border border-zinc-800 shadow-2xl text-center">
-        <h1 id="form-title" class="text-3xl font-black italic text-red-600 uppercase tracking-tighter mb-2">Login</h1>
-        <p id="form-desc" class="text-zinc-500 text-[10px] uppercase font-bold mb-8">Welcome Back Waffler!</p>
+    <div class="max-w-md w-full glass p-8 rounded-[2.5rem] border border-zinc-800 shadow-2xl">
+        <h1 id="form-title" class="text-3xl font-black italic text-red-600 uppercase text-center mb-2">Login</h1>
+        <p id="form-desc" class="text-zinc-500 text-[10px] uppercase font-bold text-center mb-8 tracking-widest">Login with Username or Phone</p>
 
         <form onsubmit="handleAuth(event)" class="space-y-4">
-            <input type="text" id="username" placeholder="Username" required class="w-full bg-black/40 border border-zinc-800 p-4 rounded-2xl text-white outline-none focus:border-red-600 transition-all">
+            <input type="text" id="identifier" placeholder="Username or Mobile Number" required class="w-full bg-black/40 border border-zinc-800 p-4 rounded-2xl text-white outline-none focus:border-red-600 transition-all">
+            
+            <div id="register-fields" class="hidden space-y-4">
+                <input type="text" id="reg-username" placeholder="Choose Username" class="w-full bg-black/40 border border-zinc-800 p-4 rounded-2xl text-white outline-none focus:border-red-600 transition-all">
+                <input type="tel" id="reg-phone" placeholder="Mobile Number" class="w-full bg-black/40 border border-zinc-800 p-4 rounded-2xl text-white outline-none focus:border-red-600 transition-all">
+            </div>
+
             <input type="password" id="password" placeholder="Password" required class="w-full bg-black/40 border border-zinc-800 p-4 rounded-2xl text-white outline-none focus:border-red-600 transition-all">
-            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl uppercase italic tracking-widest transition-all">Submit</button>
+            
+            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl uppercase italic tracking-widest transition-all shadow-lg shadow-red-900/20">
+                Confirm
+            </button>
         </form>
 
-        <button onclick="toggleMode()" id="toggle-btn" class="mt-8 text-[10px] font-bold uppercase text-zinc-500 hover:text-white transition-all">
+        <button onclick="toggleMode()" id="toggle-btn" class="w-full mt-8 text-[10px] font-bold uppercase text-zinc-500 hover:text-white transition-all">
             Don't have an account? <span class="text-red-600">Register Now</span>
         </button>
     </div>
 
     <script>
         let isLogin = true;
+
         function toggleMode() {
             isLogin = !isLogin;
             document.getElementById('form-title').innerText = isLogin ? 'Login' : 'Register';
-            document.getElementById('toggle-btn').innerHTML = isLogin ? "Don't have an account? <span class='text-red-600'>Register Now</span>" : "Already a member? <span class='text-red-600'>Login Here</span>";
+            document.getElementById('form-desc').innerText = isLogin ? 'Login with Username or Phone' : 'Create your Waffle Account';
+            document.getElementById('register-fields').classList.toggle('hidden', isLogin);
+            document.getElementById('identifier').classList.toggle('hidden', !isLogin);
+            document.getElementById('toggle-btn').innerHTML = isLogin ? 
+                "Don't have an account? <span class='text-red-600'>Register Now</span>" : 
+                "Already a member? <span class='text-red-600'>Login Here</span>";
         }
 
         async function handleAuth(event) {
             event.preventDefault();
             const endpoint = isLogin ? '/api/login' : '/api/register';
-            const data = { username: document.getElementById('username').value, password: document.getElementById('password').value };
+            
+            // Register mein alag data jayega, Login mein alag
+            const data = isLogin ? {
+                identifier: document.getElementById('identifier').value,
+                password: document.getElementById('password').value
+            } : {
+                username: document.getElementById('reg-username').value,
+                phone: document.getElementById('reg-phone').value,
+                password: document.getElementById('password').value
+            };
+
             try {
                 const res = await fetch(endpoint, {
                     method: 'POST',
@@ -45,12 +70,17 @@
                     body: JSON.stringify(data)
                 });
                 const result = await res.json();
+
                 if(res.ok) {
-                    alert(isLogin ? "Login Successful! 🧇" : "Account Created! Ab login karein.");
-                    if(isLogin) { localStorage.setItem('user', result.username); location.href = '/'; }
-                    else { toggleMode(); }
-                } else { alert(result.error || "Error!"); }
-            } catch (err) { alert("Server Error!"); }
+                    alert(isLogin ? "Welcome back! 🧇" : "Account Created! Ab login karein.");
+                    if(isLogin) {
+                        localStorage.setItem('user', result.username);
+                        location.href = '/';
+                    } else { toggleMode(); }
+                } else {
+                    alert(result.error || "Details sahi se bhariye!");
+                }
+            } catch (err) { alert("Server Down!"); }
         }
     </script>
 </body>

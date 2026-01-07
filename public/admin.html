@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crunchy Waffle Admin Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="bg-gray-100 p-5 font-sans">
     <div class="max-w-4xl mx-auto space-y-8">
@@ -51,6 +52,18 @@
                 </div>
                 <textarea id="journey" placeholder="Our Journey Text..." class="w-full p-2 border rounded h-24"></textarea>
                 <button onclick="updateAbout()" class="w-full bg-yellow-500 text-white py-3 rounded font-bold uppercase tracking-widest shadow-lg shadow-yellow-900/20">UPDATE TEAM INFO</button>
+            </div>
+        </div>
+
+        <div class="p-6 bg-zinc-900 rounded-[2.5rem] border border-zinc-800 shadow-2xl text-white">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-black text-red-600 uppercase italic tracking-tighter">Registered Users 👤</h2>
+                <button onclick="loadUsers()" class="text-[10px] bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-full uppercase font-bold transition-all">
+                    Refresh User List
+                </button>
+            </div>
+            <div id="userList" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-2">
+                <p class="text-zinc-500 italic text-center py-10">Users load ho rahe hain...</p>
             </div>
         </div>
 
@@ -134,7 +147,31 @@
             else alert("Error! Check Password.");
         }
 
-        // 2. ABOUT & TEAM SETTINGS
+        // 2. REGISTERED USERS FUNCTION (Naya)
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/get-users');
+                const users = await res.json();
+                const container = document.getElementById('userList');
+                
+                if (!users || users.length === 0) {
+                    container.innerHTML = '<p class="text-zinc-500 text-center py-10 italic">No users found.</p>';
+                    return;
+                }
+
+                container.innerHTML = users.map(u => `
+                    <div class="bg-black p-4 rounded-2xl border border-zinc-800 flex justify-between items-center hover:border-red-600/30 transition-all">
+                        <div>
+                            <h4 class="text-white font-bold uppercase text-xs">${u.username}</h4>
+                            <p class="text-red-600 text-[11px] font-black mt-1"><i class="fas fa-phone-alt mr-1"></i> ${u.phone || 'No Number'}</p>
+                        </div>
+                        <span class="text-[8px] bg-zinc-800 px-2 py-1 rounded text-zinc-500 font-bold uppercase">${u.role}</span>
+                    </div>
+                `).join('');
+            } catch (err) { console.error("User load error:", err); }
+        }
+
+        // 3. ABOUT & TEAM SETTINGS
         async function updateAbout() {
             const data = {
                 adminPassword: passInput.value,
@@ -155,7 +192,7 @@
             else alert("Error! Check Password.");
         }
 
-        // 3. LOGO DESIGNER FUNCTIONS
+        // 4. LOGO DESIGNER FUNCTIONS
         const wSlider = document.getElementById('wSlider');
         wSlider.oninput = function() {
             currentWidth = this.value;
@@ -193,18 +230,18 @@
             if(res.ok) alert("Layout Database mein save ho gaya! 🌍");
         }
 
-        // 4. INBOX FUNCTIONS
+        // 5. INBOX FUNCTIONS
         async function loadMessages() {
             try {
                 const res = await fetch('/api/get-messages');
                 const msgs = await res.json();
                 const container = document.getElementById('messageList');
                 if (!msgs || msgs.length === 0) {
-                    container.innerHTML = '<p class="text-zinc-500 text-center py-10 italic">Abhi koi message nahi aaya hai.</p>';
+                    container.innerHTML = '<p class="text-zinc-500 text-center py-10 italic">No messages.</p>';
                     return;
                 }
                 container.innerHTML = msgs.map(m => `
-                    <div class="bg-black p-5 rounded-3xl border border-zinc-800 mb-4 hover:border-red-600/50 transition-all">
+                    <div class="bg-black p-5 rounded-3xl border border-zinc-800 mb-4">
                         <div class="flex justify-between items-start mb-2 text-white">
                             <h4 class="font-black text-lg uppercase tracking-widest">${m.name}</h4>
                             <span class="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">${new Date(m.date).toLocaleString('en-IN')}</span>
@@ -215,8 +252,9 @@
             } catch (err) { console.error("Inbox load error:", err); }
         }
 
-        // Auto-load messages
+        // Auto-load
         loadMessages();
+        loadUsers();
     </script>
 </body>
 </html>
