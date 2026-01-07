@@ -134,7 +134,7 @@
 <script>
     let posX = 0, posY = 0, currentWidth = 200;
 
-    // Slider for Width
+    // Slider Logic: Size badalne ke liye
     const wSlider = document.getElementById('wSlider');
     wSlider.oninput = function() {
         currentWidth = this.value;
@@ -142,7 +142,7 @@
         document.getElementById('previewLogo').style.width = currentWidth + "px";
     };
 
-    // Interact.js for Dragging
+    // Interact.js Logic: Logo hilane ke liye
     interact('#previewLogo').draggable({
         listeners: {
             move(event) {
@@ -151,11 +151,38 @@
                 event.target.style.transform = `translate(${posX}px, ${posY}px)`;
             }
         },
-        inertia: true,
         modifiers: [
-            interact.modifiers.restrictRect({ restriction: '#adminBoundary', endOnly: true })
+            interact.modifiers.restrictRect({
+                restriction: '#adminBoundary',
+                endOnly: true
+            })
         ]
     });
+
+    // Save Logic: Server par permanently bhejane ke liye
+    // 1. Save Function (Sirf ek baar)
+    async function saveLayout() {
+        const layoutData = {
+            width: currentWidth + "px",
+            x: posX + "px",
+            y: posY + "px"
+        };
+        
+        const res = await fetch('/api/save-logo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(layoutData)
+        });
+
+        if(res.ok) alert("Duniya bhar ke liye settings save ho gayi! 🌍");
+    }
+    if(res.ok) alert("Duniya bhar ke liye settings save ho gayi! 🌍");
+    // Ye saveLayout function ka aakhri bracket hai
+</script>
+
+</body>
+</html>
+</script>
 
     function saveLayout() {
         // Website ko variables bhejne ke liye
