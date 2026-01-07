@@ -11,17 +11,26 @@
         .bg-slide.active { opacity: 0.4; }
         .cart-panel { transform: translateX(100%); transition: 0.3s; z-index: 2000; background: #111; border-left: 1px solid #333; }
         .cart-open { transform: translateX(0); }
-        body { background-color: #000; color: white; scroll-behavior: smooth; font-family: sans-serif; }
+        body { background-color: #000; color: white; scroll-behavior: smooth; font-family: sans-serif; overflow-x: hidden; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
         :root { --logo-w: 200px; --logo-x: 0px; --logo-y: 0px; }
         #main-logo { width: var(--logo-w) !important; transform: translate(var(--logo-x), var(--logo-y)) !important; }
-        .login-btn { position: absolute; top: 20px; left: 20px; z-index: 50; }
+        .nav-btn { position: absolute; top: 20px; left: 20px; z-index: 50; display: flex; gap: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="login-btn">
-        <button onclick="location.href='/auth.html'" class="glass px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-red-600 border border-zinc-800 transition-all">
+    <div class="nav-btn">
+        <div id="user-logged-in" class="hidden flex items-center gap-3">
+            <div class="glass px-4 py-2 rounded-full border border-zinc-800 flex items-center gap-3">
+                <div class="text-left">
+                    <p id="nav-username" class="text-[9px] font-black text-white uppercase italic tracking-tighter"></p>
+                    <p id="nav-wallet" class="text-[10px] font-bold text-green-500 tracking-widest">₹0.00</p>
+                </div>
+                <button onclick="logout()" class="text-zinc-500 hover:text-red-600 ml-2 transition-all"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+        <button id="login-guest-btn" onclick="location.href='/auth.html'" class="glass px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-red-600 border border-zinc-800 transition-all">
             <i class="fas fa-user-circle mr-2"></i>Login / Register
         </button>
     </div>
@@ -38,21 +47,26 @@
             </div>
         </div>
 
-        <div class="relative z-10 text-center flex flex-col items-center justify-center gap-6 pt-10">
+        <div class="relative z-10 text-center pt-10">
             <div class="flex items-center justify-center min-h-[150px]">
-                <img id="main-logo" src="/images/logo.png" class="drop-shadow-[0_10px_10px_rgba(255,0,0,0.3)] animate-pulse transition-all duration-300">
+                <img id="main-logo" src="/images/logo.png" class="drop-shadow-[0_10px_10px_rgba(255,0,0,0.3)] animate-pulse transition-all">
             </div>
             <div class="mt-4">
-                <h1 class="text-4xl md:text-7xl font-black italic text-red-600 drop-shadow-[0_5px_5px_rgba(0,0,0,1)] uppercase tracking-tighter leading-none">Crunchy Waffle</h1>
-                <p class="text-[8px] md:text-sm tracking-[0.3em] text-white/60 uppercase mt-2 italic font-bold">The Ultimate Waffle Experience</p>
+                <h1 class="text-4xl md:text-7xl font-black italic text-red-600 uppercase tracking-tighter">Crunchy Waffle</h1>
             </div>
         </div>
     </header>
 
     <section class="max-w-7xl mx-auto py-16 px-4">
         <h2 class="text-3xl font-black mb-10 italic border-l-4 border-red-600 pl-4 uppercase">Legendary Menu</h2>
-        <div id="waffle-list" class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-10">
-            </div>
+        <div id="waffle-list" class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-10"></div>
+    </section>
+
+    <section id="history-section" class="max-w-7xl mx-auto py-16 px-4 hidden border-t border-zinc-900">
+        <h2 class="text-2xl font-black mb-10 italic border-l-4 border-green-600 pl-4 uppercase">My Order History</h2>
+        <div id="order-history-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <p class="text-zinc-500 italic">No orders found.</p>
+        </div>
     </section>
 
     <div id="side-cart" class="cart-panel fixed top-0 right-0 h-full w-full md:w-96 p-8 shadow-2xl">
@@ -60,104 +74,103 @@
             <h2 class="text-2xl font-black italic text-red-600 uppercase">Your Cart</h2>
             <button onclick="toggleCart()" class="text-4xl text-zinc-600 hover:text-white transition">&times;</button>
         </div>
-        <div id="cart-items" class="space-y-4 mb-8 overflow-y-auto h-[55vh] pr-2"></div>
+        
+        <div id="cart-items" class="space-y-4 mb-4 overflow-y-auto h-[45vh] pr-2"></div>
+
+        <div class="mb-6 flex gap-2">
+            <input type="text" id="vCodeInput" placeholder="Voucher Code" class="flex-grow bg-black border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600">
+            <button onclick="applyVoucher()" class="bg-zinc-800 px-4 rounded-xl font-bold text-[10px] uppercase">Apply</button>
+        </div>
+
         <div class="border-t border-zinc-800 pt-6">
-            <div class="flex justify-between text-2xl font-black mb-6">
-                <span>Total Bill:</span>
+            <div class="flex justify-between text-2xl font-black mb-6 uppercase italic tracking-tighter">
+                <span>Total:</span>
                 <span id="cart-total" class="text-red-600">₹0</span>
             </div>
-            <button onclick="sendWhatsAppOrder()" class="w-full bg-green-600 py-4 rounded-2xl font-black text-lg shadow-lg shadow-green-900/20 hover:bg-green-700 transition">
-                CONFIRM ON WHATSAPP
+            <button onclick="sendFinalOrder()" class="w-full bg-green-600 py-4 rounded-2xl font-black text-lg shadow-lg hover:bg-green-700 transition uppercase italic">
+                Confirm Order
             </button>
         </div>
     </div>
 
-    <section class="max-w-4xl mx-auto py-20 px-6">
-        <div class="glass p-10 rounded-[2.5rem] border border-zinc-800">
-            <h2 class="text-2xl font-black italic text-red-600 mb-6 uppercase tracking-tighter">Message Admin</h2>
-            <form onsubmit="sendMessage(event)" class="space-y-4">
-                <input type="text" id="qName" placeholder="Your Name" required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600 transition-all">
-                <textarea id="qMsg" placeholder="Enter message..." required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600 transition-all h-32"></textarea>
-                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl uppercase italic tracking-widest transition-all">
-                    SEND TO ADMIN
-                </button>
-            </form>
-        </div>
-    </section>
-
-    <footer class="bg-zinc-950 py-24 border-t border-zinc-900">
-        <div class="max-w-6xl mx-auto px-6 text-center">
-            <h2 class="text-3xl font-black italic text-red-600 mb-6 uppercase">Our Journey</h2>
-            <p id="journey-text" class="text-zinc-400 italic text-lg leading-relaxed mb-16 max-w-4xl mx-auto"></p>
-            <div id="team-grid" class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center mb-20"></div>
-            <p onclick="location.href='/admin.html'" class="text-zinc-800 text-[10px] cursor-default select-none hover:text-zinc-700 transition">
-                &copy; 2026 CRUNCHY WAFFLE • Crafted with Passion
-            </p>
-        </div>
-    </footer>
-
-    <div onclick="toggleCart()" class="fixed bottom-8 right-8 bg-yellow-500 text-black p-4 rounded-full cursor-pointer z-[1001] shadow-2xl flex items-center gap-2 font-black hover:scale-110 transition active:scale-95">
+    <div onclick="toggleCart()" class="fixed bottom-8 right-8 bg-yellow-500 text-black p-4 rounded-full cursor-pointer z-[1001] shadow-2xl flex items-center gap-2 font-black">
         <i class="fas fa-shopping-cart text-xl"></i>
         <span id="cart-count">0</span>
     </div>
 
     <script>
         let cart = [];
+        let discount = 0;
         const ADMIN_NUM = "918087749069";
+        const currentUser = localStorage.getItem('user');
 
-        function loadGlobalLogo() {
-            fetch('/api/get-logo').then(res => res.json()).then(data => {
-                if(data && data.width) {
-                    const root = document.documentElement;
-                    root.style.setProperty('--logo-w', data.width);
-                    root.style.setProperty('--logo-x', data.x);
-                    root.style.setProperty('--logo-y', data.y);
-                }
-            }).catch(err => console.error(err));
+        function logout() { localStorage.removeItem('user'); location.reload(); }
+
+        async function applyVoucher() {
+            const code = document.getElementById('vCodeInput').value;
+            const res = await fetch('/api/apply-voucher', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ code })
+            });
+            const data = await res.json();
+            if(res.ok) {
+                discount = data.discount;
+                alert(`Voucher Applied! Discount: ₹${discount}`);
+                updateUI();
+            } else { alert("Invalid Code!"); }
         }
 
-        async function sendMessage(event) {
-            event.preventDefault();
-            const formData = { name: document.getElementById('qName').value, message: document.getElementById('qMsg').value };
-            try {
-                const res = await fetch('/api/messages', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
-                if(res.ok) { alert("Waffle Team ko message mil gaya! 🧇🚀"); event.target.reset(); }
-            } catch (err) { alert("Error!"); }
+        async function sendFinalOrder() {
+            if(!cart.length) return;
+            const total = cart.reduce((a, b) => a + (b.price * b.qty), 0) - discount;
+            
+            // 1. Save to History (Backend)
+            const orderData = {
+                username: currentUser || "Guest",
+                items: cart,
+                total: total,
+                status: 'Pending'
+            };
+            await fetch('/api/orders/create', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(orderData)
+            });
+
+            // 2. Open WhatsApp
+            let msg = `New Order from ${orderData.username}! 🧇\n\n*Items:*\n`;
+            cart.forEach(i => msg += `• ${i.name} (${i.qty}x)\n`);
+            msg += `\n*Total: ₹${total}*\nStatus: Pending Approval`;
+            window.open(`https://wa.me/${ADMIN_NUM}?text=${encodeURIComponent(msg)}`);
+            
+            cart = [];
+            updateUI();
+            toggleCart();
+            if(currentUser) loadHistory();
         }
 
-        function updateCounter() {
-            const start = new Date('2024-08-22T00:00:00');
-            const now = new Date();
-            const diff = now - start;
-            const d = Math.floor(diff / (1000*60*60*24));
-            const h = Math.floor((diff / (1000*60*60)) % 24);
-            const m = Math.floor((diff / (1000*60)) % 60);
-            const s = Math.floor((diff / 1000) % 60);
-            document.getElementById('live-counter').innerHTML = `
-                <div class="flex flex-col"><span class="text-red-600">${d}</span><span class="text-[9px] text-zinc-500">DAYS</span></div>
-                <span class="text-zinc-700">:</span>
-                <div class="flex flex-col"><span>${h.toString().padStart(2,'0')}</span><span class="text-[9px] text-zinc-500">HRS</span></div>
-                <span class="text-zinc-700">:</span>
-                <div class="flex flex-col"><span>${m.toString().padStart(2,'0')}</span><span class="text-[9px] text-zinc-500">MIN</span></div>
-                <span class="text-zinc-700">:</span>
-                <div class="flex flex-col"><span class="text-zinc-400">${s.toString().padStart(2,'0')}</span><span class="text-[9px] text-zinc-500">SEC</span></div>`;
-        }
-
-        function toggleCart() { document.getElementById('side-cart').classList.toggle('cart-open'); }
-        
-        function addToCart(n, p) {
-            const item = cart.find(i => i.name === n);
-            if(item) item.qty++; else cart.push({name: n, price: p, qty: 1});
-            updateUI(); if(cart.length === 1) toggleCart();
+        async function loadHistory() {
+            if(!currentUser) return;
+            document.getElementById('history-section').classList.remove('hidden');
+            const res = await fetch(`/api/orders/user/${currentUser}`);
+            const orders = await res.json();
+            document.getElementById('order-history-list').innerHTML = orders.map(o => `
+                <div class="bg-zinc-900/50 p-5 rounded-3xl border border-zinc-800 flex justify-between items-center">
+                    <div>
+                        <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">${new Date(o.date).toLocaleDateString()}</p>
+                        <h4 class="text-white font-black uppercase text-sm italic">${o.items.map(i => i.name).join(', ')}</h4>
+                        <p class="text-red-600 font-black mt-1">₹${o.total}</p>
+                    </div>
+                    <span class="text-[9px] font-black px-3 py-1 rounded-full border border-red-600/30 text-red-600 uppercase italic">${o.status}</span>
+                </div>
+            `).join('');
         }
 
         function updateUI() {
-            const total = cart.reduce((a, b) => a + (b.price * b.qty), 0);
-            document.getElementById('cart-total').innerText = `₹${total}`;
+            const subtotal = cart.reduce((a, b) => a + (b.price * b.qty), 0);
+            const finalTotal = Math.max(0, subtotal - discount);
+            document.getElementById('cart-total').innerText = `₹${finalTotal}`;
             document.getElementById('cart-count').innerText = cart.reduce((a, b) => a + b.qty, 0);
             document.getElementById('cart-items').innerHTML = cart.map((i, idx) => `
                 <div class="flex justify-between items-center bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800">
@@ -166,50 +179,40 @@
                 </div>`).join('');
         }
 
-        function sendWhatsAppOrder() {
-            if(!cart.length) return;
-            let msg = "Hello Crunchy Waffle! 🧇\n\n*Order Details:*\n";
-            cart.forEach(i => msg += `• *${i.name}* (${i.qty}x) = ₹${i.price * i.qty}\n`);
-            msg += `\n💰 *Total Bill: ₹${cart.reduce((a, b) => a + (b.price * b.qty), 0)}*`;
-            window.open(`https://wa.me/${ADMIN_NUM}?text=${encodeURIComponent(msg)}`);
+        // --- Standard functions ---
+        function toggleCart() { document.getElementById('side-cart').classList.toggle('cart-open'); }
+        function addToCart(n, p) {
+            const item = cart.find(i => i.name === n);
+            if(item) item.qty++; else cart.push({name: n, price: p, qty: 1});
+            updateUI(); if(cart.length === 1) toggleCart();
         }
 
         async function init() {
-            loadGlobalLogo();
-            setInterval(updateCounter, 1000); 
-            updateCounter();
-            
-            try {
-                // Menu Load
-                const wRes = await fetch('/api/waffles'); 
-                const waffles = await wRes.json();
-                document.getElementById('waffle-list').innerHTML = waffles.map(w => `
-                    <div class="bg-zinc-900 rounded-[2rem] overflow-hidden border border-zinc-800 flex flex-col group shadow-2xl">
-                        <img src="${w.image}" class="w-full h-36 md:h-64 object-cover group-hover:scale-110 transition duration-700">
-                        <div class="p-4 md:p-6 flex-grow flex flex-col justify-between">
-                            <div><h3 class="text-[10px] md:text-xl font-black italic uppercase truncate">${w.name}</h3><p class="text-red-600 font-black text-lg md:text-2xl mt-1">₹${w.price}</p></div>
-                            <button onclick="addToCart('${w.name}', ${w.price})" class="w-full bg-red-600 text-white mt-4 py-3 rounded-xl font-bold text-[10px] md:text-sm uppercase hover:bg-white hover:text-red-600 transition">Add To Cart</button>
-                        </div>
-                    </div>`).join('');
+            // Load Profile if logged in
+            if(currentUser) {
+                document.getElementById('user-logged-in').classList.remove('hidden');
+                document.getElementById('login-guest-btn').classList.add('hidden');
+                document.getElementById('nav-username').innerText = currentUser;
+                
+                // Fetch user data for Wallet
+                const res = await fetch('/api/get-users');
+                const users = await res.json();
+                const me = users.find(u => u.username === currentUser);
+                if(me) document.getElementById('nav-wallet').innerText = `₹${me.walletBalance || 0}`;
+                loadHistory();
+            }
 
-                // About Load
-                const aRes = await fetch('/api/about'); 
-                const aData = await aRes.json();
-                document.getElementById('journey-text').innerText = aData.journey || "Since 2024.";
-                const team = [
-                    {n: aData.ceoName, r: "CEO / Founder", p: aData.ceoPhoto},
-                    {n: aData.tm1Name, r: "Manager", p: aData.tm1Photo},
-                    {n: aData.tm2Name, r: "Chef", p: aData.tm2Photo}
-                ];
-                document.getElementById('team-grid').innerHTML = team.map(m => `
-                    <div class="group">
-                        <div class="relative w-24 h-24 md:w-40 md:h-40 mx-auto mb-4">
-                            <img src="${m.p || 'https://via.placeholder.com/150'}" class="w-full h-full rounded-full object-cover border-4 border-zinc-900 group-hover:border-red-600 transition-all duration-500 shadow-2xl">
-                        </div>
-                        <h4 class="text-white font-black italic uppercase text-sm md:text-lg tracking-tighter">${m.n || 'Team Member'}</h4>
-                        <p class="text-red-600 font-bold text-[8px] md:text-[10px] uppercase tracking-[0.2em]">${m.r}</p>
-                    </div>`).join('');
-            } catch(e) { console.error(e); }
+            // Normal menu load...
+            const wRes = await fetch('/api/waffles'); 
+            const waffles = await wRes.json();
+            document.getElementById('waffle-list').innerHTML = waffles.map(w => `
+                <div class="bg-zinc-900 rounded-[2rem] overflow-hidden border border-zinc-800 flex flex-col group">
+                    <img src="${w.image}" class="w-full h-36 md:h-64 object-cover group-hover:scale-110 transition duration-700">
+                    <div class="p-4 md:p-6 flex-grow flex flex-col justify-between">
+                        <div><h3 class="text-[10px] md:text-xl font-black italic uppercase truncate">${w.name}</h3><p class="text-red-600 font-black text-lg mt-1">₹${w.price}</p></div>
+                        <button onclick="addToCart('${w.name}', ${w.price})" class="w-full bg-red-600 text-white mt-4 py-3 rounded-xl font-bold text-[10px] md:text-sm uppercase transition hover:bg-white hover:text-red-600">Add To Cart</button>
+                    </div>
+                </div>`).join('');
         }
         init();
     </script>

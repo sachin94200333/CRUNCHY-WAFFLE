@@ -18,6 +18,35 @@
             <input type="password" id="adminPass" placeholder="Enter Admin Password (Crunchy123)" class="w-full p-3 border rounded text-lg font-bold border-red-300 outline-none focus:ring-2 focus:ring-red-600">
         </div>
 
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow border-l-4 border-green-500">
+                <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic">Wallet Credit 💰</h2>
+                <div class="space-y-3">
+                    <input type="text" id="walletPhone" placeholder="User Mobile Number" class="w-full p-2 border rounded">
+                    <input type="number" id="walletAmount" placeholder="Amount to Add" class="w-full p-2 border rounded">
+                    <button onclick="updateWallet()" class="w-full bg-green-600 text-white py-2 rounded font-bold uppercase text-xs">Recharge Wallet</button>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow border-l-4 border-blue-500">
+                <h2 class="text-xl font-bold mb-4 text-blue-600 uppercase italic">Create Voucher 🎟️</h2>
+                <div class="space-y-3">
+                    <input type="text" id="vCode" placeholder="Code (e.g. WAFFLE50)" class="w-full p-2 border rounded">
+                    <input type="number" id="vDiscount" placeholder="Discount Value" class="w-full p-2 border rounded">
+                    <button onclick="createVoucher()" class="w-full bg-blue-600 text-white py-2 rounded font-bold uppercase text-xs">Generate Voucher</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow border-t-4 border-red-500">
+            <h2 class="text-xl font-bold mb-4 text-red-600 uppercase italic flex justify-between">
+                Customer Orders 📦
+                <button onclick="loadOrders()" class="text-[10px] bg-zinc-100 px-3 py-1 rounded text-zinc-600">Refresh Orders</button>
+            </h2>
+            <div id="orderList" class="space-y-3 max-h-[400px] overflow-y-auto">
+                <p class="text-zinc-400 text-center py-4">Orders load ho rahe hain...</p>
+            </div>
+        </div>
+
         <div class="bg-white p-6 rounded-lg shadow">
             <h2 class="text-xl font-bold mb-4 border-b pb-2">Add New Waffle</h2>
             <div class="space-y-4">
@@ -107,7 +136,74 @@
         const passInput = document.getElementById('adminPass');
         let posX = 0, posY = 0, currentWidth = 200;
 
-        // 1. WAFFLE MENU FUNCTIONS
+        // --- NEW BUSINESS FUNCTIONS ---
+
+        async function updateWallet() {
+            const data = {
+                adminPassword: passInput.value,
+                phone: document.getElementById('walletPhone').value,
+                amount: Number(document.getElementById('walletAmount').value)
+            };
+            const res = await fetch('/api/admin/update-wallet', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            if(res.ok) alert("Wallet Updated Successfully! 💰");
+            else alert("Error! Check Password or User Phone.");
+        }
+
+        async function createVoucher() {
+            const data = {
+                adminPassword: passInput.value,
+                code: document.getElementById('vCode').value,
+                discount: Number(document.getElementById('vDiscount').value)
+            };
+            const res = await fetch('/api/admin/create-voucher', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            if(res.ok) alert("Voucher Created! 🎟️");
+            else alert("Error creating voucher.");
+        }
+
+        async function loadOrders() {
+            const res = await fetch('/api/admin/all-orders');
+            const orders = await res.json();
+            const container = document.getElementById('orderList');
+            if(!orders.length) { container.innerHTML = '<p class="text-center text-zinc-400">No orders found.</p>'; return; }
+            
+            container.innerHTML = orders.map(o => `
+                <div class="bg-gray-50 p-4 rounded-xl border flex justify-between items-center shadow-sm">
+                    <div>
+                        <div class="flex gap-2 mb-1">
+                            <span class="text-[9px] bg-red-600 text-white px-2 py-0.5 rounded-full font-bold uppercase">${o.status}</span>
+                            <span class="text-[9px] text-zinc-400 font-bold uppercase">${new Date(o.date).toLocaleDateString()}</span>
+                        </div>
+                        <h4 class="font-black text-zinc-800 uppercase tracking-tight">${o.username}</h4>
+                        <p class="text-[10px] text-zinc-500 italic">${o.items.map(i => i.name).join(', ')}</p>
+                        <p class="text-red-600 font-black mt-1">Total: ₹${o.total}</p>
+                    </div>
+                    ${o.status === 'Pending' ? `
+                        <button onclick="approveOrder('${o._id}')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-[10px] hover:bg-black transition">APPROVE</button>
+                    ` : '<i class="fas fa-check-circle text-green-500 text-xl"></i>'}
+                </div>
+            `).join('');
+        }
+
+        async function approveOrder(id) {
+            const res = await fetch('/api/admin/approve-order', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ adminPassword: passInput.value, orderId: id })
+            });
+            if(res.ok) { alert("Order Approved! ✅"); loadOrders(); }
+            else alert("Error approving order.");
+        }
+
+        // --- EXISTING WAFFLE & LOGO FUNCTIONS ---
+
         async function addWaffle() {
             const data = {
                 adminPassword: passInput.value,
@@ -147,23 +243,21 @@
             else alert("Error! Check Password.");
         }
 
-        // 2. REGISTERED USERS FUNCTION (Naya)
         async function loadUsers() {
             try {
                 const res = await fetch('/api/get-users');
                 const users = await res.json();
                 const container = document.getElementById('userList');
-                
                 if (!users || users.length === 0) {
                     container.innerHTML = '<p class="text-zinc-500 text-center py-10 italic">No users found.</p>';
                     return;
                 }
-
                 container.innerHTML = users.map(u => `
                     <div class="bg-black p-4 rounded-2xl border border-zinc-800 flex justify-between items-center hover:border-red-600/30 transition-all">
                         <div>
                             <h4 class="text-white font-bold uppercase text-xs">${u.username}</h4>
                             <p class="text-red-600 text-[11px] font-black mt-1"><i class="fas fa-phone-alt mr-1"></i> ${u.phone || 'No Number'}</p>
+                            <p class="text-green-500 text-[10px] font-bold">Wallet: ₹${u.walletBalance || 0}</p>
                         </div>
                         <span class="text-[8px] bg-zinc-800 px-2 py-1 rounded text-zinc-500 font-bold uppercase">${u.role}</span>
                     </div>
@@ -171,7 +265,6 @@
             } catch (err) { console.error("User load error:", err); }
         }
 
-        // 3. ABOUT & TEAM SETTINGS
         async function updateAbout() {
             const data = {
                 adminPassword: passInput.value,
@@ -192,7 +285,6 @@
             else alert("Error! Check Password.");
         }
 
-        // 4. LOGO DESIGNER FUNCTIONS
         const wSlider = document.getElementById('wSlider');
         wSlider.oninput = function() {
             currentWidth = this.value;
@@ -201,27 +293,12 @@
         };
 
         interact('#previewLogo').draggable({
-            listeners: {
-                move(event) {
-                    posX += event.dx;
-                    posY += event.dy;
-                    event.target.style.transform = `translate(${posX}px, ${posY}px)`;
-                }
-            },
-            modifiers: [
-                interact.modifiers.restrictRect({
-                    restriction: '#adminBoundary',
-                    endOnly: true
-                })
-            ]
+            listeners: { move(event) { posX += event.dx; posY += event.dy; event.target.style.transform = `translate(${posX}px, ${posY}px)`; } },
+            modifiers: [ interact.modifiers.restrictRect({ restriction: '#adminBoundary', endOnly: true }) ]
         });
 
         async function saveLayout() {
-            const layoutData = {
-                width: currentWidth + "px",
-                x: posX + "px",
-                y: posY + "px"
-            };
+            const layoutData = { width: currentWidth + "px", x: posX + "px", y: posY + "px" };
             const res = await fetch('/api/save-logo', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -230,7 +307,6 @@
             if(res.ok) alert("Layout Database mein save ho gaya! 🌍");
         }
 
-        // 5. INBOX FUNCTIONS
         async function loadMessages() {
             try {
                 const res = await fetch('/api/get-messages');
@@ -252,9 +328,9 @@
             } catch (err) { console.error("Inbox load error:", err); }
         }
 
-        // Auto-load
         loadMessages();
         loadUsers();
+        loadOrders(); // Auto load orders
     </script>
 </body>
 </html>
