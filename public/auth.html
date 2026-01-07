@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crunchy Auth | Join the Club</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #000; color: white; font-family: sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+    <div class="max-w-md w-full glass p-8 rounded-[2.5rem] border border-zinc-800 shadow-2xl text-center">
+        <h1 id="form-title" class="text-3xl font-black italic text-red-600 uppercase tracking-tighter mb-2">Login</h1>
+        <p id="form-desc" class="text-zinc-500 text-[10px] uppercase font-bold mb-8">Welcome Back Waffler!</p>
+
+        <form onsubmit="handleAuth(event)" class="space-y-4">
+            <input type="text" id="username" placeholder="Username" required class="w-full bg-black/40 border border-zinc-800 p-4 rounded-2xl text-white outline-none focus:border-red-600 transition-all">
+            <input type="password" id="password" placeholder="Password" required class="w-full bg-black/40 border border-zinc-800 p-4 rounded-2xl text-white outline-none focus:border-red-600 transition-all">
+            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl uppercase italic tracking-widest transition-all">Submit</button>
+        </form>
+
+        <button onclick="toggleMode()" id="toggle-btn" class="mt-8 text-[10px] font-bold uppercase text-zinc-500 hover:text-white transition-all">
+            Don't have an account? <span class="text-red-600">Register Now</span>
+        </button>
+    </div>
+
+    <script>
+        let isLogin = true;
+        function toggleMode() {
+            isLogin = !isLogin;
+            document.getElementById('form-title').innerText = isLogin ? 'Login' : 'Register';
+            document.getElementById('toggle-btn').innerHTML = isLogin ? "Don't have an account? <span class='text-red-600'>Register Now</span>" : "Already a member? <span class='text-red-600'>Login Here</span>";
+        }
+
+        async function handleAuth(event) {
+            event.preventDefault();
+            const endpoint = isLogin ? '/api/login' : '/api/register';
+            const data = { username: document.getElementById('username').value, password: document.getElementById('password').value };
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if(res.ok) {
+                    alert(isLogin ? "Login Successful! 🧇" : "Account Created! Ab login karein.");
+                    if(isLogin) { localStorage.setItem('user', result.username); location.href = '/'; }
+                    else { toggleMode(); }
+                } else { alert(result.error || "Error!"); }
+            } catch (err) { alert("Server Error!"); }
+        }
+    </script>
+</body>
+</html>
