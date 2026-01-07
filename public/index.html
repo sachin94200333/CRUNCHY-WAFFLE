@@ -3,115 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crunchy Waffle | Premium Cart</title>
+    <title>Crunchy Waffle | Premium Experience</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #000; color: white; }
-        .cart-panel { transform: translateX(100%); transition: 0.3s; z-index: 2000; }
-        .cart-open { transform: translateX(0); }
+        /* Slide-show animation */
+        .bg-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.5s ease-in-out; background-size: cover; background-position: center; }
+        .bg-slide.active { opacity: 0.5; }
+        .glass-box { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        body { background-color: #000; color: white; scroll-behavior: smooth; }
     </style>
 </head>
 <body>
 
-    <div onclick="toggleCart()" class="fixed bottom-24 right-8 bg-yellow-500 text-black p-4 rounded-full shadow-2xl cursor-pointer z-[1001] animate-bounce">
-        <i class="fas fa-shopping-cart text-2xl"></i>
-        <span id="cart-count" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">0</span>
-    </div>
-
-    <div id="side-cart" class="cart-panel fixed top-0 right-0 h-full w-full md:w-96 bg-zinc-900 shadow-2xl p-6 overflow-y-auto">
-        <div class="flex justify-between items-center border-b border-zinc-700 pb-4 mb-4">
-            <h2 class="text-2xl font-black italic">YOUR CART</h2>
-            <button onclick="toggleCart()" class="text-red-600 text-3xl">&times;</button>
+    <header class="relative h-screen flex items-center justify-center overflow-hidden border-b-4 border-red-600">
+        <div id="slideshow-container">
+            <div class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1562435503-903ba7ebaf78?q=80&w=2070')"></div>
+            <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1573140401532-c16e789d2ec9?q=80&w=2070')"></div>
+            <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=1978')"></div>
         </div>
-        <div id="cart-items" class="space-y-4"></div>
-        <div class="mt-8 border-t border-zinc-700 pt-4">
-            <div class="flex justify-between text-xl font-bold mb-6">
-                <span>Total:</span>
-                <span id="cart-total" class="text-red-600">₹0</span>
-            </div>
-            <button onclick="sendWhatsAppOrder()" class="w-full bg-green-600 py-4 rounded-xl font-black text-lg hover:bg-green-700 transition">
-                ORDER ON WHATSAPP
-            </button>
-        </div>
-    </div>
-
-    <header class="h-[60vh] flex items-center justify-center relative border-b-4 border-red-600">
-        <img src="https://images.unsplash.com/photo-1562435503-903ba7ebaf78" class="absolute inset-0 w-full h-full object-cover opacity-40">
-        <div class="relative text-center">
-            <h1 class="text-6xl md:text-8xl font-black italic text-red-600">CRUNCHY WAFFLE</h1>
+        
+        <div class="relative z-10 text-center">
+            <h1 class="text-6xl md:text-9xl font-black italic text-red-600 drop-shadow-2xl">CRUNCHY WAFFLE</h1>
+            <p class="text-sm md:text-2xl mt-4 tracking-[0.5em] font-light text-white uppercase italic">Premium Waffle Hub</p>
         </div>
     </header>
 
     <section class="max-w-7xl mx-auto py-12 px-4">
-        <div id="waffle-list" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+        <h2 class="text-3xl font-black mb-8 italic border-l-4 border-red-600 pl-4">OUR SPECIALS</h2>
+        <div id="waffle-list" class="grid grid-cols-2 md:grid-cols-3 gap-6"></div>
     </section>
 
+    <section class="max-w-4xl mx-auto py-16 px-6">
+        <div class="glass-box p-8 rounded-3xl">
+            <h2 class="text-2xl font-black italic text-red-600 mb-6 uppercase">Talk To Us</h2>
+            <form id="contactForm" class="space-y-4">
+                <input type="text" id="custName" placeholder="Your Name" class="w-full bg-zinc-800 p-3 rounded-xl border border-zinc-700 outline-none focus:border-red-600 transition" required>
+                <textarea id="custMsg" placeholder="What's on your mind?" class="w-full bg-zinc-800 p-3 h-32 rounded-xl border border-zinc-700 outline-none focus:border-red-600 transition" required></textarea>
+                <button type="submit" class="w-full bg-red-600 py-4 rounded-xl font-black hover:bg-white hover:text-red-600 transition">SEND MESSAGE</button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="bg-zinc-900 py-16">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <h2 class="text-2xl font-black italic text-red-600 mb-6">OUR JOURNEY</h2>
+            <p id="journey-text" class="text-zinc-500 italic mb-12"></p>
+            <div id="team-grid" class="grid grid-cols-3 gap-4"></div>
+        </div>
+    </footer>
+
     <script>
-        let cart = [];
+        // Slideshow Logic
+        const slides = document.querySelectorAll('.bg-slide');
+        let currentSlide = 0;
+        setInterval(() => {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }, 4000);
 
-        function addToCart(name, price) {
-            const item = cart.find(i => i.name === name);
-            if (item) item.qty++;
-            else cart.push({ name, price, qty: 1 });
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const itemsDiv = document.getElementById('cart-items');
-            const countSpan = document.getElementById('cart-count');
-            const totalSpan = document.getElementById('cart-total');
-            
-            itemsDiv.innerHTML = cart.map((item, index) => `
-                <div class="flex justify-between items-center bg-zinc-800 p-3 rounded-lg">
-                    <div>
-                        <p class="font-bold">${item.name}</p>
-                        <p class="text-xs text-zinc-400">₹${item.price} x ${item.qty}</p>
-                    </div>
-                    <button onclick="removeItem(${index})" class="text-red-500 text-sm">Remove</button>
-                </div>`).join('');
-            
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            const count = cart.reduce((sum, item) => sum + item.qty, 0);
-            
-            totalSpan.innerText = `₹${total}`;
-            countSpan.innerText = count;
-        }
-
-        function removeItem(index) {
-            cart.splice(index, 1);
-            updateCartUI();
-        }
-
-        function toggleCart() {
-            document.getElementById('side-cart').classList.toggle('cart-open');
-        }
-
-        function sendWhatsAppOrder() {
-            if (cart.length === 0) return alert("Cart is empty!");
-            const phoneNumber = "918087749069"; // Apna Number Dalein
-            let orderText = "Hello Crunchy Waffle! 👋\nI want to place an order:\n\n";
-            cart.forEach(item => {
-                orderText += `🧇 *${item.name}* (${item.qty} pcs) - ₹${item.price * item.qty}\n`;
-            });
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            orderText += `\n💰 *Total Amount: ₹${total}*`;
-            
-            window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(orderText)}`, '_blank');
-        }
-
-        function toggleCart() { document.getElementById('side-cart').classList.toggle('cart-open'); }
+        // Form Submit to WhatsApp
+        document.getElementById('contactForm').onsubmit = (e) => {
+            e.preventDefault();
+            const name = document.getElementById('custName').value;
+            const msg = document.getElementById('custMsg').value;
+            window.open(`https://wa.me/918087749069?text=Hi! I am ${name}. ${msg}`, '_blank');
+        };
 
         async function init() {
-            const res = await fetch('/api/waffles');
-            const waffles = await res.json();
+            const wRes = await fetch('/api/waffles');
+            const waffles = await wRes.json();
             document.getElementById('waffle-list').innerHTML = waffles.map(w => `
-                <div class="bg-zinc-900 rounded-xl overflow-hidden border border-zinc-800 p-2">
-                    <img src="${w.image}" class="w-full h-32 md:h-64 object-cover rounded-lg">
-                    <h3 class="text-sm font-bold mt-2 uppercase">${w.name}</h3>
-                    <p class="text-red-600 font-black">₹${w.price}</p>
-                    <button onclick="addToCart('${w.name}', ${w.price})" class="w-full bg-red-600 mt-2 py-2 rounded text-[10px] md:text-sm font-bold">ADD TO CART</button>
+                <div class="bg-zinc-800 rounded-2xl overflow-hidden border border-zinc-700 flex flex-col">
+                    <img src="${w.image}" class="w-full h-40 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-black italic uppercase text-sm">${w.name}</h3>
+                        <p class="text-red-600 font-bold mt-2">₹${w.price}</p>
+                    </div>
                 </div>`).join('');
+
+            const aRes = await fetch('/api/about');
+            const data = await aRes.json();
+            document.getElementById('journey-text').innerText = data.journey || "Creating crispy memories.";
         }
         init();
     </script>
