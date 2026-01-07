@@ -3,30 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Crunchy Waffle</title>
+    <title>Crunchy Waffle Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-8">
-    <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold mb-8">Crunchy Waffle Admin Panel</h1>
-        
-        <div class="bg-white p-6 rounded-lg shadow-md mb-10">
-            <h2 class="text-xl font-bold mb-4 text-red-600">Add New Waffle</h2>
-            <div class="grid grid-cols-1 gap-4">
-                <input type="password" id="adminPass" placeholder="Admin Password" class="p-2 border rounded">
-                <input type="text" id="name" placeholder="Waffle Name" class="p-2 border rounded">
-                <input type="number" id="price" placeholder="Price (INR)" class="p-2 border rounded">
-                <input type="text" id="desc" placeholder="Description" class="p-2 border rounded">
-                <input type="text" id="img" placeholder="Image URL (Direct Link)" class="p-2 border rounded">
-                <button onclick="addWaffle()" class="bg-red-600 text-white p-3 rounded font-bold hover:bg-red-700">ADD TO MENU</button>
+<body class="bg-gray-100 p-5">
+    <div class="max-w-4xl mx-auto space-y-8">
+        <h1 class="text-3xl font-bold text-center text-red-600">Admin Dashboard</h1>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+            <input type="password" id="adminPass" placeholder="Enter Admin Password" class="w-full p-3 border rounded text-lg font-bold">
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4 border-b pb-2">Add New Waffle</h2>
+            <div class="space-y-4">
+                <input type="text" id="wName" placeholder="Waffle Name" class="w-full p-2 border rounded">
+                <input type="number" id="wPrice" placeholder="Price" class="w-full p-2 border rounded">
+                <input type="text" id="wDesc" placeholder="Description" class="w-full p-2 border rounded">
+                <input type="text" id="wImg" placeholder="Waffle Image URL" class="w-full p-2 border rounded">
+                <button onclick="addWaffle()" class="w-full bg-red-600 text-white py-3 rounded font-bold">ADD WAFFLE</button>
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-bold mb-4 text-blue-600">Customer Messages</h2>
-            <button onclick="loadMessages()" class="mb-4 bg-gray-200 px-4 py-2 rounded text-sm">Refresh Messages</button>
-            <div id="message-list" class="space-y-4">
+        <div class="bg-white p-6 rounded-lg shadow border-t-4 border-yellow-500">
+            <h2 class="text-xl font-bold mb-4 text-yellow-600">Team & About Settings</h2>
+            <div class="space-y-6">
+                <div class="p-4 border rounded bg-yellow-50">
+                    <h3 class="font-bold mb-2 underline">CEO (Sachin) Details</h3>
+                    <input type="text" id="ceoName" placeholder="CEO Name" class="w-full p-2 border rounded mb-2">
+                    <input type="text" id="ceoPhoto" placeholder="CEO Photo URL" class="w-full p-2 border rounded">
                 </div>
+                
+                <div class="p-4 border rounded bg-gray-50">
+                    <h3 class="font-bold mb-2 underline">Team Member 1</h3>
+                    <input type="text" id="tm1Name" placeholder="Member 1 Name" class="w-full p-2 border rounded mb-2">
+                    <input type="text" id="tm1Photo" placeholder="Member 1 Photo URL" class="w-full p-2 border rounded">
+                </div>
+
+                <div class="p-4 border rounded bg-gray-50">
+                    <h3 class="font-bold mb-2 underline">Team Member 2</h3>
+                    <input type="text" id="tm2Name" placeholder="Member 2 Name" class="w-full p-2 border rounded mb-2">
+                    <input type="text" id="tm2Photo" placeholder="Member 2 Photo URL" class="w-full p-2 border rounded">
+                </div>
+
+                <textarea id="journey" placeholder="Our Journey Text..." class="w-full p-2 border rounded h-32"></textarea>
+                <button onclick="updateAbout()" class="w-full bg-yellow-500 text-white py-3 rounded font-bold">UPDATE ALL TEAM SETTINGS</button>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow border-t-4 border-blue-500">
+            <h2 class="text-xl font-bold mb-4">Customer Messages</h2>
+            <button onclick="getMessages()" class="bg-blue-500 text-white px-4 py-2 rounded text-sm mb-4">Check Messages</button>
+            <div id="msgList" class="space-y-2"></div>
         </div>
     </div>
 
@@ -34,45 +62,54 @@
         async function addWaffle() {
             const data = {
                 adminPassword: document.getElementById('adminPass').value,
-                name: document.getElementById('name').value,
-                price: document.getElementById('price').value,
-                description: document.getElementById('desc').value,
-                image: document.getElementById('img').value
+                name: document.getElementById('wName').value,
+                price: document.getElementById('wPrice').value,
+                description: document.getElementById('wDesc').value,
+                image: document.getElementById('wImg').value
             };
-
             const res = await fetch('/api/waffles', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(data)
             });
-
-            if(res.ok) {
-                alert("Waffle Added Successfully!");
-                location.reload();
-            } else {
-                alert("Error: Galat Password ya Server Problem");
-            }
+            if(res.ok) alert("Waffle Added!");
+            else alert("Error! Check Password.");
         }
 
-        async function loadMessages() {
-            const pass = document.getElementById('adminPass').value;
-            if(!pass) return alert("Pehle password daliye messages dekhne ke liye!");
+        async function updateAbout() {
+            const data = {
+                adminPassword: document.getElementById('adminPass').value,
+                ceoName: document.getElementById('ceoName').value,
+                ceoPhoto: document.getElementById('ceoPhoto').value,
+                tm1Name: document.getElementById('tm1Name').value,
+                tm1Photo: document.getElementById('tm1Photo').value,
+                tm2Name: document.getElementById('tm2Name').value,
+                tm2Photo: document.getElementById('tm2Photo').value,
+                journey: document.getElementById('journey').value
+            };
+            const res = await fetch('/api/about', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            if(res.ok) alert("Team Details Updated!");
+            else alert("Error!");
+        }
 
+        async function getMessages() {
+            const pass = document.getElementById('adminPass').value;
             const res = await fetch('/api/admin/messages', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ adminPassword: pass })
             });
-
             const messages = await res.json();
-            const list = document.getElementById('message-list');
-            list.innerHTML = messages.map(m => `
-                <div class="border-b pb-2">
+            document.getElementById('msgList').innerHTML = messages.map(m => `
+                <div class="p-3 bg-gray-50 border-l-4 border-blue-400">
                     <p class="font-bold">${m.name}</p>
-                    <p class="text-sm text-gray-600">${m.message}</p>
-                    <p class="text-xs text-gray-400">${new Date(m.date).toLocaleString()}</p>
-                </div>
-            `).join('');
+                    <p>${m.message}</p>
+                    <small>${new Date(m.date).toLocaleString()}</small>
+                </div>`).join('');
         }
     </script>
 </body>
