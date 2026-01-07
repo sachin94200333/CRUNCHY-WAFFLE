@@ -46,22 +46,24 @@ app.get('/api/about', async (req, res) => {
     res.json(about || {});
 });
 
+a// --- Yahan se mita kar paste karein ---
 app.post('/api/about', async (req, res) => {
-    if (req.body.adminPassword !== process.env.ADMIN_PASSWORD) return res.status(401).send("Unauthorized");
-    let about = await About.findOne();
-    if (about) {
-        Object.assign(about, req.body);
-        await about.save();
-    } else {
-        about = new About(req.body);
-        await about.save();
+    try {
+        let about = await About.findOne();
+        if (about) {
+            Object.assign(about, req.body);
+            await about.save();
+        } else {
+            about = new About(req.body);
+            await about.save();
+        }
+        res.json(about);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-    res.json(about);
-});
-res.json(about);
 });
 
-// --- YAHAN PASTE KAREIN (Line 61) ---
+// Logo Settings (Global)
 let savedLayout = { width: "200px", x: "0px", y: "0px" };
 
 app.post('/api/save-logo', (req, res) => {
@@ -72,6 +74,10 @@ app.post('/api/save-logo', (req, res) => {
 app.get('/api/get-logo', (req, res) => {
     res.json(savedLayout);
 });
+
+// Static files aur Listen wala part niche rahega
+app.use(express.static(path.join(__dirname, 'public')));
+// --- Yahan tak ---
 
 // --- ISKE NICHE YE PEHLE SE LIKHA HOGA ---
 // --- STATICS & ROUTING FIX ---
