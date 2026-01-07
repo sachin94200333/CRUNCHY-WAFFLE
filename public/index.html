@@ -15,9 +15,17 @@
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
         :root { --logo-w: 200px; --logo-x: 0px; --logo-y: 0px; }
         #main-logo { width: var(--logo-w) !important; transform: translate(var(--logo-x), var(--logo-y)) !important; }
+        /* Naya Login Button Style */
+        .login-btn { position: absolute; top: 20px; left: 20px; z-index: 50; }
     </style>
 </head>
 <body>
+
+    <div class="login-btn">
+        <button onclick="location.href='/auth.html'" class="glass px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-red-600 border border-zinc-800 transition-all">
+            <i class="fas fa-user-circle mr-2"></i>Login / Register
+        </button>
+    </div>
 
     <header class="relative min-h-[500px] h-[60vh] flex flex-col items-center justify-center overflow-hidden border-b-2 border-red-600 bg-black">
         <div id="slideshow" class="absolute inset-0 z-0">
@@ -81,7 +89,9 @@
         <div class="max-w-6xl mx-auto px-6 text-center">
             <h2 class="text-3xl font-black italic text-red-600 mb-6 uppercase">Our Journey</h2>
             <p id="journey-text" class="text-zinc-400 italic text-lg leading-relaxed mb-16 max-w-4xl mx-auto"></p>
-            <div id="team-grid" class="grid grid-cols-3 gap-6 text-center mb-20"></div>
+            
+            <div id="team-grid" class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center mb-20"></div>
+
             <p onclick="location.href='/admin.html'" class="text-zinc-800 text-[10px] cursor-default select-none hover:text-zinc-700 transition">
                 &copy; 2026 CRUNCHY WAFFLE • Crafted with Passion
             </p>
@@ -97,7 +107,6 @@
         let cart = [];
         const ADMIN_NUM = "918087749069";
 
-        // 1. LOGO LOAD
         function loadGlobalLogo() {
             fetch('/api/get-logo')
                 .then(res => res.json())
@@ -111,7 +120,6 @@
                 }).catch(err => console.error(err));
         }
 
-        // 2. SEND MESSAGE
         async function sendMessage(event) {
             event.preventDefault();
             const formData = {
@@ -131,7 +139,6 @@
             } catch (err) { alert("Error sending message."); }
         }
 
-        // 3. COUNTER & UI
         function updateCounter() {
             const start = new Date('2024-08-22T00:00:00');
             const now = new Date();
@@ -156,6 +163,7 @@
             if(item) item.qty++; else cart.push({name: n, price: p, qty: 1});
             updateUI(); if(cart.length === 1) toggleCart();
         }
+
         function updateUI() {
             const total = cart.reduce((a, b) => a + (b.price * b.qty), 0);
             document.getElementById('cart-total').innerText = `₹${total}`;
@@ -166,6 +174,7 @@
                     <button onclick="cart.splice(${idx},1);updateUI()" class="text-zinc-600 hover:text-red-600"><i class="fas fa-trash-alt"></i></button>
                 </div>`).join('');
         }
+
         function sendWhatsAppOrder() {
             if(!cart.length) return;
             let msg = "Hello Crunchy Waffle! 🧇\n\n*Naya Order Details:*\n";
@@ -174,12 +183,15 @@
             window.open(`https://wa.me/${ADMIN_NUM}?text=${encodeURIComponent(msg)}`);
         }
 
-        // 4. INIT ALL
         async function init() {
             loadGlobalLogo();
-            setInterval(updateCounter, 1000); updateCounter();
+            setInterval(updateCounter, 1000); 
+            updateCounter();
+            
             try {
-                const wRes = await fetch('/api/waffles'); const waffles = await wRes.json();
+                // Menu Loading
+                const wRes = await fetch('/api/waffles'); 
+                const waffles = await wRes.json();
                 document.getElementById('waffle-list').innerHTML = waffles.map(w => `
                     <div class="bg-zinc-900 rounded-[2rem] overflow-hidden border border-zinc-800 flex flex-col group shadow-2xl">
                         <img src="${w.image}" class="w-full h-36 md:h-64 object-cover group-hover:scale-110 transition duration-700">
@@ -189,13 +201,27 @@
                         </div>
                     </div>`).join('');
 
-                const aRes = await fetch('/api/about'); const aData = await aRes.json();
+                // CEO, Manager & Team Loading (Fixed IDs and Mapping)
+                const aRes = await fetch('/api/about'); 
+                const aData = await aRes.json();
                 document.getElementById('journey-text').innerText = aData.journey || "Since 2024.";
-                const team = [{n: aData.ceoName, p: aData.ceoPhoto}, {n: aData.tm1Name, p: aData.tm1Photo}, {n: aData.tm2Name, p: aData.tm2Photo}];
+                
+                // Humne yahan ceoName, tm1Name (Manager) aur unki photos map kar di hain
+                const team = [
+                    {n: aData.ceoName, r: "CEO / Founder", p: aData.ceoPhoto},
+                    {n: aData.tm1Name, r: "Manager", p: aData.tm1Photo},
+                    {n: aData.tm2Name, r: "Head Chef", p: aData.tm2Photo}
+                ];
+                
                 document.getElementById('team-grid').innerHTML = team.map(m => `
-                    <div><img src="${m.p || 'https://via.placeholder.com/150'}" class="w-16 h-16 md:w-32 md:h-32 rounded-full mx-auto object-cover border-2 border-red-600">
-                    <h4 class="text-[10px] md:text-xs font-bold mt-2 uppercase text-zinc-500">${m.n || 'Team'}</h4></div>`).join('');
-            } catch(e) { console.error(e); }
+                    <div class="group">
+                        <div class="relative w-24 h-24 md:w-40 md:h-40 mx-auto mb-4">
+                            <img src="${m.p || 'https://via.placeholder.com/150'}" class="w-full h-full rounded-full object-cover border-4 border-zinc-900 group-hover:border-red-600 transition-all duration-500 shadow-2xl">
+                        </div>
+                        <h4 class="text-white font-black italic uppercase text-sm md:text-lg tracking-tighter">${m.n || 'Team Member'}</h4>
+                        <p class="text-red-600 font-bold text-[8px] md:text-[10px] uppercase tracking-[0.2em]">${m.r}</p>
+                    </div>`).join('');
+            } catch(e) { console.error("Initialization Error:", e); }
         }
         init();
     </script>
