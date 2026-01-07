@@ -30,28 +30,34 @@
 </head>
 <body>
 
-    <header class="relative h-[50vh] md:h-[60vh] flex items-center justify-center overflow-hidden border-b-2 border-red-600 bg-black">
+   <header class="relative min-h-[500px] h-[60vh] flex flex-col items-center justify-center overflow-hidden border-b-2 border-red-600 bg-black">
         
         <div id="slideshow" class="absolute inset-0 z-0">
             <div class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1562435503-903ba7ebaf78?q=80&w=2070')"></div>
-            <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1573140401532-c16e789d2ec9?q=80&w=2070')"></div>
         </div>
 
-        <div class="absolute top-3 right-3 z-20">
-            <div class="glass p-2 md:p-3 rounded-lg border border-red-600/10 backdrop-blur-md text-right">
-                <p class="text-[6px] md:text-[8px] uppercase tracking-tighter text-zinc-500 font-bold">Serving Since 22-08-2024</p>
-                <div id="live-counter" class="text-[8px] md:text-base font-black text-white flex gap-1 justify-end items-center">
-                    </div>
+        <div class="absolute top-4 right-4 z-20">
+            <div class="glass p-2 rounded-xl border border-red-600/20 backdrop-blur-md text-right">
+                <p class="text-[8px] uppercase tracking-widest text-zinc-500 font-bold">Serving Since 22-08-2024</p>
+                <div id="live-counter" class="text-xs md:text-xl font-black text-white flex gap-1 justify-end"></div>
             </div>
         </div>
 
-       <div class="relative z-10 text-center flex flex-col items-center justify-center px-4 -mt-4">
-    <div class="mb-1">
-        <img id="main-logo" src="/images/logo.png" 
-             class="w-[150px] md:w-[280px] lg:w-[350px] drop-shadow-[0_5px_15px_rgba(255,0,0,0.2)] animate-pulse transition-all">
-    </div>
-    ...
-</div>
+        <div class="relative z-10 text-center flex flex-col items-center justify-center gap-6 pt-10">
+            <div class="flex items-center justify-center min-h-[150px]">
+                <img id="main-logo" src="/images/logo.png" 
+                     class="drop-shadow-[0_10px_10px_rgba(255,0,0,0.3)] animate-pulse transition-all duration-300"
+                     style="width: var(--logo-w); transform: translate(var(--logo-x), var(--logo-y));">
+            </div>
+            
+            <div class="mt-4">
+                <h1 class="text-4xl md:text-7xl font-black italic text-red-600 drop-shadow-[0_5px_5px_rgba(0,0,0,1)] uppercase tracking-tighter leading-none">
+                    Crunchy Waffle
+                </h1>
+                <p class="text-[8px] md:text-sm tracking-[0.3em] text-white/60 uppercase mt-2 italic font-bold">The Ultimate Waffle Experience</p>
+            </div>
+        </div>
+    </header>
 
     <section class="max-w-7xl mx-auto py-16 px-4">
         <h2 class="text-3xl font-black mb-10 italic border-l-4 border-red-600 pl-4 uppercase">Legendary Menu</h2>
