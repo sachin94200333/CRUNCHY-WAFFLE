@@ -88,32 +88,44 @@
 
         function toggleCart() { document.getElementById('side-cart').classList.toggle('cart-open'); }
 
-        function addToCart(name, price) {
-            const item = cart.find(i => i.name === name);
-            if(item) item.qty++; else cart.push({name, price, qty: 1});
-            updateUI();
-            if(cart.length === 1) toggleCart();
-        }
+        // 1. Ye hamesha script ke sabse upar rahega
+let cart = []; 
 
-        function updateUI() {
-            const total = cart.reduce((a,b) => a + (b.price * b.qty), 0);
-            document.getElementById('cart-total').innerText = `₹${total}`;
-            document.getElementById('cart-count').innerText = cart.reduce((a,b) => a + b.qty, 0);
-            document.getElementById('cart-items').innerHTML = cart.map((i, idx) => `
-                <div class="flex justify-between bg-zinc-900 p-4 rounded-xl border border-zinc-800">
-                    <div><b>${i.name}</b><br><span class="text-red-600 text-xs">₹${i.price} x ${i.qty}</span></div>
-                    <button onclick="cart.splice(${idx},1);updateUI()" class="text-zinc-500">×</button>
-                </div>`).join('');
-        }
+function addToCart(name, price) {
+    // 2. Check karo kya ye product pehle se cart mein hai?
+    const existingProduct = cart.find(item => item.name === name);
 
-        function sendWhatsAppOrder() {
-            if(!cart.length) return;
-            let msg = "Hello Crunchy Waffle! 🧇\n\nI want to order:\n";
-            cart.forEach(i => msg += `• *${i.name}* (${i.qty}x) = ₹${i.price * i.qty}\n`);
-            msg += `\n💰 *Total: ₹${cart.reduce((a,b) => a + (b.price * b.qty), 0)}*`;
-            window.open(`https://wa.me/${ADMIN_PHONE}?text=${encodeURIComponent(msg)}`);
-        }
+    if (existingProduct) {
+        // 3. Agar hai, toh sirf quantity badhao
+        existingProduct.qty += 1;
+    } else {
+        // 4. Agar naya hai, toh use list mein jodd do
+        cart.push({ name: name, price: price, qty: 1 });
+    }
+    
+    // UI update karo taaki list dikhe
+    updateUI();
+}
 
+function sendWhatsAppOrder() {
+    if (cart.length === 0) return alert("Cart khali hai!");
+
+    // 5. Poore bill ki calculation
+    let orderDetails = "Hello Crunchy Waffle! 🧇\n\n*New Order Details:*\n";
+    let totalBill = 0;
+
+    cart.forEach(item => {
+        const itemTotal = item.price * item.qty;
+        orderDetails += `• ${item.name} (${item.qty} x ₹${item.price}) = *₹${itemTotal}*\n`;
+        totalBill += itemTotal;
+    });
+
+    orderDetails += `\n💰 *Total Amount: ₹${totalBill}*`;
+
+    // WhatsApp par poora bill bhejo
+    const url = `https://wa.me/918087749069?text=${encodeURIComponent(orderDetails)}`;
+    window.open(url, '_blank');
+}
         document.getElementById('queryForm').onsubmit = (e) => {
             e.preventDefault();
             const n = document.getElementById('qName').value;
