@@ -46,24 +46,16 @@ app.get('/api/about', async (req, res) => {
     res.json(about || {});
 });
 
-a// --- Yahan se mita kar paste karein ---
 app.post('/api/about', async (req, res) => {
     try {
-        let about = await About.findOne();
-        if (about) {
-            Object.assign(about, req.body);
-            await about.save();
-        } else {
-            about = new About(req.body);
-            await about.save();
-        }
-        res.json(about);
+        // Purana about update logic
+        res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).send(err);
     }
 });
 
-// Logo Settings (Global)
+// --- YAHAN SE NAYA LOGO CODE SHURU ---
 let savedLayout = { width: "200px", x: "0px", y: "0px" };
 
 app.post('/api/save-logo', (req, res) => {
@@ -74,6 +66,10 @@ app.post('/api/save-logo', (req, res) => {
 app.get('/api/get-logo', (req, res) => {
     res.json(savedLayout);
 });
+// --- NAYA LOGO CODE KHATAM ---
+
+// --- STATICS & ROUTING FIX ---
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Static files aur Listen wala part niche rahega
 app.use(express.static(path.join(__dirname, 'public')));
