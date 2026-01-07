@@ -5,86 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crunchy Waffle | Premium Experience</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Slide-show animation */
         .bg-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.5s ease-in-out; background-size: cover; background-position: center; }
-        .bg-slide.active { opacity: 0.5; }
-        .glass-box { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .bg-slide.active { opacity: 0.4; }
+        .cart-panel { transform: translateX(100%); transition: 0.3s; z-index: 2000; background: #111; }
+        .cart-open { transform: translateX(0); }
         body { background-color: #000; color: white; scroll-behavior: smooth; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
 
-    <header class="relative h-screen flex items-center justify-center overflow-hidden border-b-4 border-red-600">
+    <header class="relative h-[75vh] flex items-center justify-center overflow-hidden border-b-4 border-red-600">
         <div id="slideshow-container">
             <div class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1562435503-903ba7ebaf78?q=80&w=2070')"></div>
             <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1573140401532-c16e789d2ec9?q=80&w=2070')"></div>
             <div class="bg-slide" style="background-image: url('https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=1978')"></div>
         </div>
-        
-        <div class="relative z-10 text-center">
+        <div class="relative z-10 text-center px-4">
             <h1 class="text-6xl md:text-9xl font-black italic text-red-600 drop-shadow-2xl">CRUNCHY WAFFLE</h1>
-            <p class="text-sm md:text-2xl mt-4 tracking-[0.5em] font-light text-white uppercase italic">Premium Waffle Hub</p>
+            <p class="text-sm md:text-2xl mt-4 tracking-[0.4em] font-light text-white uppercase italic">Serving Happiness Since 2024</p>
         </div>
     </header>
 
     <section class="max-w-7xl mx-auto py-12 px-4">
-        <h2 class="text-3xl font-black mb-8 italic border-l-4 border-red-600 pl-4">OUR SPECIALS</h2>
-        <div id="waffle-list" class="grid grid-cols-2 md:grid-cols-3 gap-6"></div>
+        <h2 class="text-3xl font-black mb-8 italic border-l-4 border-red-600 pl-4 uppercase">Legendary Menu</h2>
+        <div id="waffle-list" class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-10"></div>
     </section>
 
-    <section class="max-w-4xl mx-auto py-16 px-6">
-        <div class="glass-box p-8 rounded-3xl">
-            <h2 class="text-2xl font-black italic text-red-600 mb-6 uppercase">Talk To Us</h2>
-            <form id="contactForm" class="space-y-4">
-                <input type="text" id="custName" placeholder="Your Name" class="w-full bg-zinc-800 p-3 rounded-xl border border-zinc-700 outline-none focus:border-red-600 transition" required>
-                <textarea id="custMsg" placeholder="What's on your mind?" class="w-full bg-zinc-800 p-3 h-32 rounded-xl border border-zinc-700 outline-none focus:border-red-600 transition" required></textarea>
-                <button type="submit" class="w-full bg-red-600 py-4 rounded-xl font-black hover:bg-white hover:text-red-600 transition">SEND MESSAGE</button>
+    <div onclick="toggleCart()" class="fixed bottom-8 right-8 bg-yellow-500 text-black p-4 rounded-full cursor-pointer z-[1001] shadow-2xl flex items-center gap-2 font-bold">
+        <i class="fas fa-shopping-cart text-xl"></i>
+        <span id="cart-count">0</span>
+    </div>
+
+    <div id="side-cart" class="cart-panel fixed top-0 right-0 h-full w-full md:w-96 shadow-2xl p-6 overflow-y-auto">
+        <div class="flex justify-between items-center mb-8 border-b border-zinc-800 pb-4">
+            <h2 class="text-2xl font-black italic text-red-600 uppercase">Your Order</h2>
+            <button onclick="toggleCart()" class="text-3xl text-zinc-500">&times;</button>
+        </div>
+        <div id="cart-items" class="space-y-4 mb-8"></div>
+        <div class="border-t border-zinc-800 pt-6">
+            <div class="flex justify-between text-2xl font-black mb-6">
+                <span>Total:</span>
+                <span id="cart-total" class="text-red-600">₹0</span>
+            </div>
+            <button onclick="sendWhatsAppOrder()" class="w-full bg-green-600 py-4 rounded-2xl font-black text-lg hover:bg-green-700 transition">
+                CONFIRM ORDER ON WHATSAPP
+            </button>
+        </div>
+    </div>
+
+    <section class="max-w-4xl mx-auto py-20 px-6">
+        <div class="glass p-8 rounded-[2rem]">
+            <h2 class="text-3xl font-black italic text-red-600 mb-8 uppercase">Talk to us</h2>
+            <form id="queryForm" class="space-y-4">
+                <input type="text" id="qName" placeholder="Your Name" class="w-full bg-zinc-900/50 p-4 rounded-xl border border-zinc-800 outline-none focus:border-red-600 transition" required>
+                <textarea id="qMsg" placeholder="Your Message or Feedback" class="w-full bg-zinc-900/50 p-4 h-32 rounded-xl border border-zinc-800 outline-none focus:border-red-600 transition" required></textarea>
+                <button type="submit" class="w-full bg-red-600 py-4 rounded-xl font-black hover:bg-white hover:text-red-600 transition">SEND QUERY</button>
             </form>
         </div>
     </section>
 
-    <footer class="bg-zinc-900 py-16">
-        <div class="max-w-6xl mx-auto px-6 text-center">
-            <h2 class="text-2xl font-black italic text-red-600 mb-6">OUR JOURNEY</h2>
-            <p id="journey-text" class="text-zinc-500 italic mb-12"></p>
-            <div id="team-grid" class="grid grid-cols-3 gap-4"></div>
-        </div>
-    </footer>
-
     <script>
+        let cart = [];
+        const MY_PHONE = "918087749069"; // Apna WhatsApp Number yahan dalein
+
         // Slideshow Logic
         const slides = document.querySelectorAll('.bg-slide');
-        let currentSlide = 0;
+        let curSlide = 0;
         setInterval(() => {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + 1) % slides.length;
-            slides[currentSlide].classList.add('active');
-        }, 4000);
+            slides[curSlide].classList.remove('active');
+            curSlide = (curSlide + 1) % slides.length;
+            slides[curSlide].classList.add('active');
+        }, 4500);
 
-        // Form Submit to WhatsApp
-        document.getElementById('contactForm').onsubmit = (e) => {
+        function toggleCart() { document.getElementById('side-cart').classList.toggle('cart-open'); }
+
+        function addToCart(name, price) {
+            const item = cart.find(i => i.name === name);
+            if(item) item.qty++; else cart.push({name, price, qty: 1});
+            updateUI();
+        }
+
+        function updateUI() {
+            const itemsDiv = document.getElementById('cart-items');
+            itemsDiv.innerHTML = cart.map((i, idx) => `
+                <div class="flex justify-between items-center bg-zinc-900 p-4 rounded-xl">
+                    <div class="text-sm">
+                        <p class="font-bold uppercase">${i.name}</p>
+                        <p class="text-zinc-500">₹${i.price} x ${i.qty}</p>
+                    </div>
+                    <button onclick="cart.splice(${idx},1);updateUI()" class="text-red-600 font-bold">Remove</button>
+                </div>`).join('');
+            
+            const total = cart.reduce((a,b) => a + (b.price * b.qty), 0);
+            document.getElementById('cart-total').innerText = `₹${total}`;
+            document.getElementById('cart-count').innerText = cart.reduce((a,b) => a + b.qty, 0);
+        }
+
+        function sendWhatsAppOrder() {
+            if(cart.length === 0) return alert("Cart Khali Hai!");
+            let msg = "Hello Crunchy Waffle! 🧇\n\nI want to order:\n";
+            cart.forEach(i => msg += `• *${i.name}* (${i.qty}x) - ₹${i.price * i.qty}\n`);
+            const total = cart.reduce((a,b) => a + (b.price * b.qty), 0);
+            msg += `\n💰 *Total Bill: ₹${total}*\nPlease confirm my order.`;
+            window.open(`https://wa.me/${MY_PHONE}?text=${encodeURIComponent(msg)}`);
+        }
+
+        document.getElementById('queryForm').onsubmit = (e) => {
             e.preventDefault();
-            const name = document.getElementById('custName').value;
-            const msg = document.getElementById('custMsg').value;
-            window.open(`https://wa.me/918087749069?text=Hi! I am ${name}. ${msg}`, '_blank');
+            const n = document.getElementById('qName').value;
+            const m = document.getElementById('qMsg').value;
+            window.open(`https://wa.me/${MY_PHONE}?text=Query from ${n}: ${m}`);
         };
 
         async function init() {
-            const wRes = await fetch('/api/waffles');
-            const waffles = await wRes.json();
-            document.getElementById('waffle-list').innerHTML = waffles.map(w => `
-                <div class="bg-zinc-800 rounded-2xl overflow-hidden border border-zinc-700 flex flex-col">
-                    <img src="${w.image}" class="w-full h-40 object-cover">
-                    <div class="p-4">
-                        <h3 class="font-black italic uppercase text-sm">${w.name}</h3>
-                        <p class="text-red-600 font-bold mt-2">₹${w.price}</p>
+            const res = await fetch('/api/waffles');
+            const data = await res.json();
+            document.getElementById('waffle-list').innerHTML = data.map(w => `
+                <div class="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 flex flex-col shadow-2xl">
+                    <img src="${w.image}" class="w-full h-32 md:h-64 object-cover">
+                    <div class="p-4 flex flex-col justify-between flex-grow">
+                        <div>
+                            <h3 class="text-xs md:text-xl font-black italic uppercase truncate">${w.name}</h3>
+                            <p class="text-red-600 font-black text-lg md:text-2xl mt-1">₹${w.price}</p>
+                        </div>
+                        <button onclick="addToCart('${w.name}', ${w.price})" class="w-full bg-red-600 text-white mt-4 py-2 rounded-lg font-bold text-[10px] md:text-sm hover:bg-white hover:text-red-600 transition uppercase">Add to Cart</button>
                     </div>
                 </div>`).join('');
-
-            const aRes = await fetch('/api/about');
-            const data = await aRes.json();
-            document.getElementById('journey-text').innerText = data.journey || "Creating crispy memories.";
         }
         init();
     </script>
