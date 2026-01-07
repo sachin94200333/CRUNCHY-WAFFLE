@@ -58,6 +58,23 @@ app.post('/api/about', async (req, res) => {
     }
     res.json(about);
 });
+res.json(about);
+});
+
+// --- YAHAN PASTE KAREIN (Line 61) ---
+let savedLayout = { width: "200px", x: "0px", y: "0px" };
+
+app.post('/api/save-logo', (req, res) => {
+    savedLayout = req.body;
+    res.json({ success: true });
+});
+
+app.get('/api/get-logo', (req, res) => {
+    res.json(savedLayout);
+});
+
+// --- ISKE NICHE YE PEHLE SE LIKHA HOGA ---
+// --- STATICS & ROUTING FIX ---
 
 // --- STATICS & ROUTING FIX ---
 // Path ko handle karne ka sahi tarika naye Express ke liye
