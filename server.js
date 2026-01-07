@@ -13,10 +13,13 @@ mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.log("DB Error: ", err));
 
-// Schemas
+// --- SCHEMAS (MODELS) ---
+
+// 1. Waffle Menu Model
 const waffleSchema = new mongoose.Schema({ name: String, price: Number, description: String, image: String });
 const Waffle = mongoose.model('Waffle', waffleSchema);
 
+// 2. About/Team Model (CEO & Manager)
 const aboutSchema = new mongoose.Schema({
     ceoName: String, ceoPhoto: String,
     tm1Name: String, tm1Photo: String,
@@ -25,7 +28,56 @@ const aboutSchema = new mongoose.Schema({
 });
 const About = mongoose.model('About', aboutSchema);
 
-// API Routes
+// 3. Logo Settings Model
+const LogoSchema = new mongoose.Schema({
+    width: { type: String, default: "200px" },
+    x: { type: String, default: "0px" },
+    y: { type: String, default: "0px" }
+});
+const LogoSettings = mongoose.model('LogoSettings', LogoSchema);
+
+// 4. Customer Message Model (Inbox)
+const MsgSchema = new mongoose.Schema({
+    name: String,
+    message: String,
+    date: { type: Date, default: Date.now }
+});
+const Message = mongoose.model('Message', MsgSchema);
+
+// 5. Naya User Model (Login/Register ke liye)
+const UserSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    role: { type: String, default: 'user' }
+});
+const User = mongoose.model('User', UserSchema);
+
+// --- API ROUTES ---
+
+// A. AUTH ROUTES (Register & Login)
+app.post('/api/register', async (req, res) => {
+    try {
+        const newUser = new User(req.body);
+        await newUser.save();
+        res.json({ success: true, message: "Account created!" });
+    } catch (err) {
+        res.status(400).json({ error: "Username already exists!" });
+    }
+});
+
+app.post('/api/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const user = await User.findOne({ username, password });
+        if (user) {
+            res.json({ success: true, role: user.role, username: user.username });
+        } else {
+            res.status(401).json({ error: "Invalid credentials!" });
+        }
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// B. WAFFLE MENU ROUTES
 app.get('/api/waffles', async (req, res) => { res.json(await Waffle.find()); });
 
 app.post('/api/waffles', async (req, res) => {
@@ -41,37 +93,33 @@ app.delete('/api/waffles/:id', async (req, res) => {
     res.json({ message: "Deleted" });
 });
 
+// C. ABOUT & TEAM ROUTES (Fixed)
 app.get('/api/about', async (req, res) => {
     const about = await About.findOne();
     res.json(about || {});
 });
 
 app.post('/api/about', async (req, res) => {
+    if (req.body.adminPassword !== process.env.ADMIN_PASSWORD) return res.status(401).send("Unauthorized");
     try {
-        // Purana about update logic
+        let about = await About.findOne();
+        if (about) {
+            Object.assign(about, req.body);
+            await about.save();
+        } else {
+            about = new About(req.body);
+            await about.save();
+        }
         res.json({ success: true });
-    } catch (err) {
-        res.status(500).send(err);
-    }
+    } catch (err) { res.status(500).send(err); }
 });
 
-// 1. Logo Schema (Database Model)
-const LogoSchema = new mongoose.Schema({
-    width: { type: String, default: "200px" },
-    x: { type: String, default: "0px" },
-    y: { type: String, default: "0px" }
+// D. LOGO ROUTES (Database Sync)
+app.get('/api/get-logo', async (req, res) => {
+    const settings = await LogoSettings.findOne();
+    res.json(settings || { width: "200px", x: "0px", y: "0px" });
 });
-const LogoSettings = mongoose.model('LogoSettings', LogoSchema);
 
-// 2. Customer Message Schema
-const MsgSchema = new mongoose.Schema({
-    name: String,
-    message: String,
-    date: { type: Date, default: Date.now }
-});
-const Message = mongoose.model('Message', MsgSchema);
-
-// 3. Save Logo API (Database Sync)
 app.post('/api/save-logo', async (req, res) => {
     try {
         let settings = await LogoSettings.findOne();
@@ -83,57 +131,27 @@ app.post('/api/save-logo', async (req, res) => {
             await settings.save();
         }
         res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// 4. Get Logo API
-app.get('/api/get-logo', async (req, res) => {
-    try {
-        const settings = await LogoSettings.findOne();
-        res.json(settings || { width: "200px", x: "0px", y: "0px" });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// 5. Customer Message Receive API
+// E. MESSAGE ROUTES (Inbox)
 app.post('/api/messages', async (req, res) => {
     try {
         const newMsg = new Message(req.body);
         await newMsg.save();
         res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// 6. Get Messages (For Admin Inbox)
 app.get('/api/get-messages', async (req, res) => {
-    try {
-        const messages = await Message.find().sort({ date: -1 });
-        res.json(messages);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    const messages = await Message.find().sort({ date: -1 });
+    res.json(messages);
 });
-// --- NAYA LOGO CODE KHATAM ---
 
 // --- STATICS & ROUTING FIX ---
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Static files aur Listen wala part niche rahega
-app.use(express.static(path.join(__dirname, 'public')));
-// --- Yahan tak ---
-
-// --- ISKE NICHE YE PEHLE SE LIKHA HOGA ---
-// --- STATICS & ROUTING FIX ---
-
-// --- STATICS & ROUTING FIX ---
-// Path ko handle karne ka sahi tarika naye Express ke liye
-app.use(express.static(path.join(__dirname, 'public')));
-
+// Path handle for SPA (index.html)
 app.get(/^\/(?!api).*/, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });

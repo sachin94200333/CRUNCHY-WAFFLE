@@ -8,10 +8,13 @@
 </head>
 <body class="bg-gray-100 p-5 font-sans">
     <div class="max-w-4xl mx-auto space-y-8">
-        <h1 class="text-3xl font-bold text-center text-red-600">Admin Dashboard</h1>
+        <div class="flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-red-600 uppercase italic tracking-tighter">Admin Dashboard</h1>
+            <button onclick="location.href='/'" class="text-[10px] font-bold bg-zinc-800 text-white px-4 py-2 rounded-full uppercase">Back to Site</button>
+        </div>
 
         <div class="bg-white p-6 rounded-lg shadow">
-            <input type="password" id="adminPass" placeholder="Enter Admin Password (Crunchy123)" class="w-full p-3 border rounded text-lg font-bold border-red-300">
+            <input type="password" id="adminPass" placeholder="Enter Admin Password (Crunchy123)" class="w-full p-3 border rounded text-lg font-bold border-red-300 outline-none focus:ring-2 focus:ring-red-600">
         </div>
 
         <div class="bg-white p-6 rounded-lg shadow">
@@ -21,34 +24,77 @@
                 <input type="number" id="wPrice" placeholder="Price" class="w-full p-2 border rounded">
                 <input type="text" id="wDesc" placeholder="Description" class="w-full p-2 border rounded">
                 <input type="text" id="wImg" placeholder="Image URL (ImgBB Direct Link)" class="w-full p-2 border rounded">
-                <button onclick="addWaffle()" class="w-full bg-green-600 text-white py-3 rounded font-bold hover:bg-green-700">ADD WAFFLE</button>
+                <button onclick="addWaffle()" class="w-full bg-green-600 text-white py-3 rounded font-bold hover:bg-green-700 transition-all">ADD WAFFLE</button>
             </div>
         </div>
 
         <div class="bg-white p-6 rounded-lg shadow">
             <h2 class="text-xl font-bold mb-4 border-b pb-2">Manage Menu</h2>
-            <button onclick="loadWafflesForDelete()" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 text-sm">Load Menu to Delete</button>
-            <div id="deleteList" class="space-y-4"></div>
+            <button onclick="loadWafflesForDelete()" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 text-sm font-bold uppercase tracking-widest">Load Menu to Delete</button>
+            <div id="deleteList" class="space-y-2"></div>
         </div>
 
         <div class="bg-white p-6 rounded-lg shadow border-t-4 border-yellow-500">
-            <h2 class="text-xl font-bold mb-4 text-yellow-600">Team & About Settings</h2>
+            <h2 class="text-xl font-bold mb-4 text-yellow-600 uppercase">Team & About Settings</h2>
             <div class="space-y-4">
-                <input type="text" id="ceoName" placeholder="CEO Name" class="w-full p-2 border rounded">
-                <input type="text" id="ceoPhoto" placeholder="CEO Photo URL" class="w-full p-2 border rounded">
-                <input type="text" id="tm1Name" placeholder="Member 1 Name" class="w-full p-2 border rounded">
-                <input type="text" id="tm1Photo" placeholder="Member 1 Photo URL" class="w-full p-2 border rounded">
-                <input type="text" id="tm2Name" placeholder="Member 2 Name" class="w-full p-2 border rounded">
-                <input type="text" id="tm2Photo" placeholder="Member 2 Photo URL" class="w-full p-2 border rounded">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="ceoName" placeholder="CEO Name" class="p-2 border rounded">
+                    <input type="text" id="ceoPhoto" placeholder="CEO Photo URL" class="p-2 border rounded">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="tm1Name" placeholder="Manager Name" class="p-2 border rounded">
+                    <input type="text" id="tm1Photo" placeholder="Manager Photo URL" class="p-2 border rounded">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="tm2Name" placeholder="Chef Name" class="p-2 border rounded">
+                    <input type="text" id="tm2Photo" placeholder="Chef Photo URL" class="p-2 border rounded">
+                </div>
                 <textarea id="journey" placeholder="Our Journey Text..." class="w-full p-2 border rounded h-24"></textarea>
-                <button onclick="updateAbout()" class="w-full bg-yellow-500 text-white py-3 rounded font-bold">UPDATE TEAM INFO</button>
+                <button onclick="updateAbout()" class="w-full bg-yellow-500 text-white py-3 rounded font-bold uppercase tracking-widest shadow-lg shadow-yellow-900/20">UPDATE TEAM INFO</button>
+            </div>
+        </div>
+
+        <div class="p-6 bg-zinc-900 rounded-[2.5rem] border border-zinc-800 text-white">
+            <h2 class="text-2xl font-black italic text-red-600 mb-2 uppercase">Live Logo Designer</h2>
+            <p class="text-zinc-500 text-xs mb-8">Slider se size set karein aur Drag karke position.</p>
+
+            <div class="grid md:grid-cols-2 gap-10">
+                <div class="space-y-8">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-zinc-400 mb-4 font-bold">Logo Width (Size)</label>
+                        <input type="range" id="wSlider" min="50" max="600" value="200" class="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-red-600">
+                        <p class="text-right text-red-600 font-bold mt-2" id="wVal">200px</p>
+                    </div>
+                    <button onclick="saveLayout()" class="w-full bg-red-600 py-4 rounded-2xl font-black uppercase hover:scale-95 transition-all shadow-lg shadow-red-900/20">
+                        Save Final Layout
+                    </button>
+                </div>
+
+                <div class="relative h-64 bg-black rounded-3xl border-2 border-dashed border-zinc-800 flex items-center justify-center overflow-hidden" id="adminBoundary">
+                    <img id="previewLogo" src="/images/logo.png" class="absolute w-[200px] cursor-move touch-none">
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 bg-zinc-900 rounded-[2.5rem] border border-zinc-800 shadow-2xl text-white">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-black text-red-600 uppercase italic tracking-tighter">Customer Inbox 📩</h2>
+                <button onclick="loadMessages()" class="text-[10px] bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-full uppercase font-bold transition-all">
+                    Refresh Messages
+                </button>
+            </div>
+            <div id="messageList" class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                <p class="text-zinc-500 italic text-center py-10">Messages load ho rahe hain...</p>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
     <script>
         const passInput = document.getElementById('adminPass');
+        let posX = 0, posY = 0, currentWidth = 200;
 
+        // 1. WAFFLE MENU FUNCTIONS
         async function addWaffle() {
             const data = {
                 adminPassword: passInput.value,
@@ -70,9 +116,9 @@
             const res = await fetch('/api/waffles');
             const waffles = await res.json();
             document.getElementById('deleteList').innerHTML = waffles.map(w => `
-                <div class="flex justify-between items-center p-3 bg-gray-50 border rounded">
-                    <span>${w.name} (₹${w.price})</span>
-                    <button onclick="deleteWaffle('${w._id}')" class="bg-red-600 text-white px-3 py-1 rounded text-xs">DELETE</button>
+                <div class="flex justify-between items-center p-3 bg-gray-50 border rounded text-black">
+                    <span class="font-bold uppercase text-xs">${w.name} (₹${w.price})</span>
+                    <button onclick="deleteWaffle('${w._id}')" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold hover:bg-black transition-all">DELETE</button>
                 </div>
             `).join('');
         }
@@ -88,6 +134,7 @@
             else alert("Error! Check Password.");
         }
 
+        // 2. ABOUT & TEAM SETTINGS
         async function updateAbout() {
             const data = {
                 adminPassword: passInput.value,
@@ -107,138 +154,69 @@
             if(res.ok) alert("Team Updated!");
             else alert("Error! Check Password.");
         }
-    </script>
-    <div class="max-w-4xl mx-auto p-6 bg-zinc-900 rounded-[2.5rem] border border-zinc-800 my-10 text-white">
-    <h2 class="text-2xl font-black italic text-red-600 mb-2 uppercase">Live Logo Designer</h2>
-    <p class="text-zinc-500 text-xs mb-8">Slider se size set karein aur Drag karke position.</p>
 
-    <div class="grid md:grid-cols-2 gap-10">
-        <div class="space-y-8">
-            <div>
-                <label class="block text-xs uppercase tracking-widest text-zinc-400 mb-4 font-bold">Logo Width (Size)</label>
-                <input type="range" id="wSlider" min="50" max="600" value="200" class="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-red-600">
-                <p class="text-right text-red-600 font-bold mt-2" id="wVal">200px</p>
-            </div>
-            <button onclick="saveLayout()" class="w-full bg-red-600 py-4 rounded-2xl font-black uppercase hover:scale-95 transition-all shadow-lg shadow-red-900/20">
-                Save Final Layout
-            </button>
-        </div>
-
-        <div class="relative h-64 bg-black rounded-3xl border-2 border-dashed border-zinc-800 flex items-center justify-center overflow-hidden" id="adminBoundary">
-            <img id="previewLogo" src="/images/logo.png" class="absolute w-[100px] cursor-move touch-none">
-        </div>
-    </div>
-</div>
-<div class="max-w-4xl mx-auto p-6 bg-zinc-900 rounded-[2.5rem] border border-zinc-800 mt-10 shadow-2xl">
-    <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-black text-red-600 uppercase italic tracking-tighter">Customer Inbox 📩</h2>
-        <button onclick="loadMessages()" class="text-[10px] bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-full uppercase font-bold transition-all">
-            Refresh Messages
-        </button>
-    </div>
-    
-    <div id="messageList" class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-        <p class="text-zinc-500 italic text-center py-10">Messages load ho rahe hain...</p>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
-<script>
-    let posX = 0, posY = 0, currentWidth = 200;
-
-    // Slider Logic: Size badalne ke liye
-    const wSlider = document.getElementById('wSlider');
-    wSlider.oninput = function() {
-        currentWidth = this.value;
-        document.getElementById('wVal').innerText = currentWidth + "px";
-        document.getElementById('previewLogo').style.width = currentWidth + "px";
-    };
-
-    // Interact.js Logic: Logo hilane ke liye
-    interact('#previewLogo').draggable({
-        listeners: {
-            move(event) {
-                posX += event.dx;
-                posY += event.dy;
-                event.target.style.transform = `translate(${posX}px, ${posY}px)`;
-            }
-        },
-        modifiers: [
-            interact.modifiers.restrictRect({
-                restriction: '#adminBoundary',
-                endOnly: true
-            })
-        ]
-    });
-
-    // Save Logic: Server par permanently bhejane ke liye
-    // 1. Save Function (Sirf ek baar)
-    async function saveLayout() {
-        const layoutData = {
-            width: currentWidth + "px",
-            x: posX + "px",
-            y: posY + "px"
+        // 3. LOGO DESIGNER FUNCTIONS
+        const wSlider = document.getElementById('wSlider');
+        wSlider.oninput = function() {
+            currentWidth = this.value;
+            document.getElementById('wVal').innerText = currentWidth + "px";
+            document.getElementById('previewLogo').style.width = currentWidth + "px";
         };
-        
-        const res = await fetch('/api/save-logo', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(layoutData)
+
+        interact('#previewLogo').draggable({
+            listeners: {
+                move(event) {
+                    posX += event.dx;
+                    posY += event.dy;
+                    event.target.style.transform = `translate(${posX}px, ${posY}px)`;
+                }
+            },
+            modifiers: [
+                interact.modifiers.restrictRect({
+                    restriction: '#adminBoundary',
+                    endOnly: true
+                })
+            ]
         });
 
-        if(res.ok) alert("Duniya bhar ke liye settings save ho gayi! 🌍");
-    }
-    if(res.ok) alert("Duniya bhar ke liye settings save ho gayi! 🌍");
-    // Ye saveLayout function ka aakhri bracket hai
-    // --- Yahan se paste karein (Purane function ke bracket ke turant baad) ---
-
-async function loadMessages() {
-    try {
-        const res = await fetch('/api/get-messages');
-        const msgs = await res.json();
-        const container = document.getElementById('messageList');
-        
-        if (!msgs || msgs.length === 0) {
-            container.innerHTML = '<p class="text-zinc-500 text-center py-10 italic">Abhi koi message nahi aaya hai.</p>';
-            return;
+        async function saveLayout() {
+            const layoutData = {
+                width: currentWidth + "px",
+                x: posX + "px",
+                y: posY + "px"
+            };
+            const res = await fetch('/api/save-logo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(layoutData)
+            });
+            if(res.ok) alert("Layout Database mein save ho gaya! 🌍");
         }
 
-        container.innerHTML = msgs.map(m => `
-            <div class="bg-black p-5 rounded-3xl border border-zinc-800 mb-4 hover:border-red-600/50 transition-all">
-                <div class="flex justify-between items-start mb-2">
-                    <h4 class="text-white font-black text-lg uppercase">${m.name}</h4>
-                    <span class="text-[10px] text-zinc-600 font-bold uppercase">${new Date(m.date).toLocaleString('en-IN')}</span>
-                </div>
-                <p class="text-zinc-400 text-sm leading-relaxed">${m.message}</p>
-            </div>
-        `).join('');
-    } catch (err) {
-        console.error("Messages load nahi ho paye:", err);
-    }
-}
+        // 4. INBOX FUNCTIONS
+        async function loadMessages() {
+            try {
+                const res = await fetch('/api/get-messages');
+                const msgs = await res.json();
+                const container = document.getElementById('messageList');
+                if (!msgs || msgs.length === 0) {
+                    container.innerHTML = '<p class="text-zinc-500 text-center py-10 italic">Abhi koi message nahi aaya hai.</p>';
+                    return;
+                }
+                container.innerHTML = msgs.map(m => `
+                    <div class="bg-black p-5 rounded-3xl border border-zinc-800 mb-4 hover:border-red-600/50 transition-all">
+                        <div class="flex justify-between items-start mb-2 text-white">
+                            <h4 class="font-black text-lg uppercase tracking-widest">${m.name}</h4>
+                            <span class="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">${new Date(m.date).toLocaleString('en-IN')}</span>
+                        </div>
+                        <p class="text-zinc-400 text-sm leading-relaxed">${m.message}</p>
+                    </div>
+                `).join('');
+            } catch (err) { console.error("Inbox load error:", err); }
+        }
 
-// Page khulte hi messages dikhao
-loadMessages();
-</script>
-
-</body>
-</html>
-</script>
-
-    function saveLayout() {
-        // Website ko variables bhejne ke liye
-        const layoutData = {
-            width: currentWidth + "px",
-            x: posX + "px",
-            y: posY + "px"
-        };
-        
-        // LocalStorage mein save (Abhi ke liye)
-        localStorage.setItem('crunchy_logo_layout', JSON.stringify(layoutData));
-        
-        alert("Layout Saved! Ab aapki website par logo yahin dikhega.");
-        // Note: Real-time update ke liye humne index.html mein variables lagaye hain.
-    }
-</script>
+        // Auto-load messages
+        loadMessages();
+    </script>
 </body>
 </html>
