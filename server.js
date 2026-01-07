@@ -9,13 +9,11 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors());
-
-// Sabse Zaroori: Isse aapka naya 'public' folder website dikhayega
 app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("MongoDB Connected... Crunchy Waffle is Live!  waffle"))
+.then(() => console.log("MongoDB Connected... Crunchy Waffle is Live!"))
 .catch(err => console.log("MongoDB Connection Error: ", err));
 
 // --- DATA MODELS ---
@@ -29,25 +27,30 @@ const waffleSchema = new mongoose.Schema({
 });
 const Waffle = mongoose.model('Waffle', waffleSchema);
 
-// 2. Customer Message Schema (Aapka naya Inbox)
+// 2. Customer Message Schema
 const messageSchema = new mongoose.Schema({
     name: String,
     email: String,
     message: String,
     date: { type: Date, default: Date.now }
-    // 3. About Us Schema (CEO Settings)
-const aboutSchema = new mongoose.Schema({
-    ceoName: String,
-    ceoPhoto: String,
-    journey: String
-});
-const About = mongoose.model('About', aboutSchema);
 });
 const Message = mongoose.model('Message', messageSchema);
 
+// 3. Team & About Schema
+const aboutSchema = new mongoose.Schema({
+    ceoName: String,
+    ceoPhoto: String,
+    tm1Name: String,
+    tm1Photo: String,
+    tm2Name: String,
+    tm2Photo: String,
+    journey: String
+});
+const About = mongoose.model('About', aboutSchema);
+
 // --- API ROUTES ---
 
-// 1. Get All Waffles (Customer Menu ke liye)
+// Get All Waffles
 app.get('/api/waffles', async (req, res) => {
     try {
         const waffles = await Waffle.find();
@@ -57,14 +60,12 @@ app.get('/api/waffles', async (req, res) => {
     }
 });
 
-// 2. Add Waffle (Sirf Admin ke liye - Password protected)
+// Add Waffle (Admin)
 app.post('/api/waffles', async (req, res) => {
     const { adminPassword, name, price, description, image } = req.body;
-    
     if (adminPassword !== process.env.ADMIN_PASSWORD) {
-        return res.status(401).json({ message: "Galat Password! Aap waffle add nahi kar sakte." });
+        return res.status(401).json({ message: "Unauthorized" });
     }
-
     const newWaffle = new Waffle({ name, price, description, image });
     try {
         await newWaffle.save();
@@ -73,78 +74,66 @@ app.post('/api/waffles', async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 });
-// --- Naya About Us API ---
 
-// 1. Get About info
+// Get About/Team Info
 app.get('/api/about', async (req, res) => {
-    const about = await About.findOne();
-    res.json(about || { ceoName: "Sachin", ceoPhoto: "", journey: "Hamari shuruat..." });
-});
-
-// 2. Update About info (Admin Only)
-app.post('/api/about', async (req, res) => {
-    const { adminPassword, ceoName, ceoPhoto, journey } = req.body;
-    if (adminPassword !== process.env.ADMIN_PASSWORD) return res.status(401).send("Unauthorized");
-    
-    let about = await About.findOne();
-    if (about) {
-        about.ceoName = ceoName; 
-        about.ceoPhoto = ceoPhoto; 
-        about.journey = journey;
-        await about.save();
-    } else {
-        about = new About({ ceoName, ceoPhoto, journey });
-        await about.save();
-    }
-    res.json(about);
-});
-
-// 3. Delete Waffle (Sirf Admin ke liye)
-app.delete('/api/waffles/:id', async (req, res) => {
-    const { adminPassword } = req.body;
-    
-    if (adminPassword !== process.env.ADMIN_PASSWORD) {
-        return res.status(401).json({ message: "Unauthorized" });
-    }
-
     try {
-        await Waffle.findByIdAndDelete(req.params.id);
-        res.json({ message: "Waffle Deleted Successfully" });
+        const about = await About.findOne();
+        res.json(about || { ceoName: "Sachin", journey: "Hamari Shuruat..." });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
 
-// 4. Save Customer Message (Jab koi contact form bharega)
-app.post('/api/messages', async (req, res) => {
-    const { name, email, message } = req.body;
-    const newMessage = new Message({ name, email, message });
+// Update About/Team Info (Admin)
+app.post('/api/about', async (req, res) => {
+    const { adminPassword, ceoName, ceoPhoto, tm1Name, tm1Photo, tm2Name, tm2Photo, journey } = req.body;
+    if (adminPassword !== process.env.ADMIN_PASSWORD) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
     try {
-        await newMessage.save();
-        res.json({ message: "Aapka message mil gaya hai! Hum jald contact karenge." });
+        let about = await About.findOne();
+        if (about) {
+            about.ceoName = ceoName; about.ceoPhoto = ceoPhoto;
+            about.tm1Name = tm1Name; about.tm1Photo = tm1Photo;
+            about.tm2Name = tm2Name; about.tm2Photo = tm2Photo;
+            about.journey = journey;
+            await about.save();
+        } else {
+            about = new About({ ceoName, ceoPhoto, tm1Name, tm1Photo, tm2Name, tm2Photo, journey });
+            await about.save();
+        }
+        res.json(about);
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
 });
 
-// 5. Get All Messages (Sirf Admin dekh sakega)
-app.post('/api/admin/messages', async (req, res) => {
-    const { adminPassword } = req.body;
-    if (adminPassword !== process.env.ADMIN_PASSWORD) {
-        return res.status(401).json({ message: "Unauthorized" });
-    }
+// Save Customer Message
+app.post('/api/messages', async (req, res) => {
+    const { name, email, message } = req.body;
+    const newMessage = new Message({ name, email, message });
     try {
-        const messages = await Message.find().sort({ date: -1 });
-        res.json(messages);
+        await newMessage.save();
+        res.json({ message: "Sent!" });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(400).json({ message: err.message });
     }
 });
 
-// Catch-all route to serve index.html for any other requests
+// Get All Messages (Admin)
+app.post('/api/admin/messages', async (req, res) => {
+    if (req.body.adminPassword !== process.env.ADMIN_PASSWORD) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    const messages = await Message.find().sort({ date: -1 });
+    res.json(messages);
+});
+
+// Serve Frontend
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
