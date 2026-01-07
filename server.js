@@ -120,7 +120,19 @@ app.post('/api/messages', async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 });
-
+// Delete Waffle API
+app.delete('/api/waffles/:id', async (req, res) => {
+    const { adminPassword } = req.body;
+    if (adminPassword !== process.env.ADMIN_PASSWORD) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+        await Waffle.findByIdAndDelete(req.params.id);
+        res.json({ message: "Waffle Deleted Successfully" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
 // Get All Messages (Admin)
 app.post('/api/admin/messages', async (req, res) => {
     if (req.body.adminPassword !== process.env.ADMIN_PASSWORD) {
