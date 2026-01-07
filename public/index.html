@@ -3,98 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crunchy Auth | Join the Club</title>
+    <title>Crunchy Waffle | Premium Experience</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #000; color: white; font-family: sans-serif; }
+        .bg-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.5s; background-size: cover; background-position: center; }
+        .bg-slide.active { opacity: 0.4; }
+        .cart-panel { transform: translateX(100%); transition: 0.3s; z-index: 2000; background: #111; border-left: 1px solid #333; }
+        .cart-open { transform: translateX(0); }
+        body { background-color: #000; color: white; scroll-behavior: smooth; font-family: sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+        :root { --logo-w: 200px; --logo-x: 0px; --logo-y: 0px; }
+        #main-logo { width: var(--logo-w) !important; transform: translate(var(--logo-x), var(--logo-y)) !important; }
+        .login-btn { position: absolute; top: 20px; left: 20px; z-index: 50; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-6">
+<body>
 
-    <div class="max-w-md w-full glass p-8 rounded-[2.5rem] border border-zinc-800 shadow-2xl">
-        <div class="text-center mb-10">
-            <h1 id="form-title" class="text-3xl font-black italic text-red-600 uppercase tracking-tighter">Login</h1>
-            <p id="form-desc" class="text-zinc-500 text-xs uppercase tracking-widest mt-2 font-bold">Welcome Back Waffler!</p>
+    <div class="login-btn">
+        <button onclick="location.href='/auth.html'" class="glass px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-red-600 border border-zinc-800 transition-all">
+            <i class="fas fa-user-circle mr-2"></i>Login / Register
+        </button>
+    </div>
+
+    <header class="relative min-h-[500px] h-[60vh] flex flex-col items-center justify-center overflow-hidden border-b-2 border-red-600 bg-black">
+        <div id="slideshow" class="absolute inset-0 z-0">
+            <div class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1562435503-903ba7ebaf78?q=80&w=2070')"></div>
         </div>
 
-        <form onsubmit="handleAuth(event)" class="space-y-4">
-            <input type="text" id="identifier" placeholder="Username or Mobile Number" required class="w-full bg-black/40 border border-zinc-800 p-4 rounded-2xl text-white outline-none focus:border-red-600 transition-all">
-            
-            <div id="register-fields" class="hidden space-y-4">
-                <input type="text" id="reg-username" placeholder="Choose Username" class="w-full bg-black/40 border border-zinc-800 p-4 rounded-2xl text-white outline-none focus:border-red-600 transition-all">
-                <input type="tel" id="reg-phone" placeholder="Mobile Number" class="w-full bg-black/40 border border-zinc-800 p-4 rounded-2xl text-white outline-none focus:border-red-600 transition-all">
+        <div class="absolute top-4 right-4 z-20">
+            <div class="glass p-2 rounded-xl border border-red-600/20 backdrop-blur-md text-right">
+                <p class="text-[8px] uppercase tracking-widest text-zinc-500 font-bold">Serving Since 22-08-2024</p>
+                <div id="live-counter" class="text-xs md:text-xl font-black text-white flex gap-1 justify-end"></div>
             </div>
+        </div>
 
-            <input type="password" id="password" placeholder="Password" required class="w-full bg-black/40 border border-zinc-800 p-4 rounded-2xl text-white outline-none focus:border-red-600 transition-all">
-            
-            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl uppercase italic tracking-widest transition-all shadow-lg shadow-red-900/20">
-                Confirm
-            </button>
-        </form>
+        <div class="relative z-10 text-center flex flex-col items-center justify-center gap-6 pt-10">
+            <div class="flex items-center justify-center min-h-[150px]">
+                <img id="main-logo" src="/images/logo.png" class="drop-shadow-[0_10px_10px_rgba(255,0,0,0.3)] animate-pulse transition-all duration-300">
+            </div>
+            <div class="mt-4">
+                <h1 class="text-4xl md:text-7xl font-black italic text-red-600 drop-shadow-[0_5px_5px_rgba(0,0,0,1)] uppercase tracking-tighter leading-none">Crunchy Waffle</h1>
+                <p class="text-[8px] md:text-sm tracking-[0.3em] text-white/60 uppercase mt-2 italic font-bold">The Ultimate Waffle Experience</p>
+            </div>
+        </div>
+    </header>
 
-        <div class="mt-8 text-center">
-            <button onclick="toggleMode()" id="toggle-btn" class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-all">
-                Don't have an account? <span class="text-red-600">Register Now</span>
+    <section class="max-w-7xl mx-auto py-16 px-4">
+        <h2 class="text-3xl font-black mb-10 italic border-l-4 border-red-600 pl-4 uppercase">Legendary Menu</h2>
+        <div id="waffle-list" class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-10">
+            </div>
+    </section>
+
+    <div id="side-cart" class="cart-panel fixed top-0 right-0 h-full w-full md:w-96 p-8 shadow-2xl">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-black italic text-red-600 uppercase">Your Cart</h2>
+            <button onclick="toggleCart()" class="text-4xl text-zinc-600 hover:text-white transition">&times;</button>
+        </div>
+        <div id="cart-items" class="space-y-4 mb-8 overflow-y-auto h-[55vh] pr-2"></div>
+        <div class="border-t border-zinc-800 pt-6">
+            <div class="flex justify-between text-2xl font-black mb-6">
+                <span>Total Bill:</span>
+                <span id="cart-total" class="text-red-600">₹0</span>
+            </div>
+            <button onclick="sendWhatsAppOrder()" class="w-full bg-green-600 py-4 rounded-2xl font-black text-lg shadow-lg shadow-green-900/20 hover:bg-green-700 transition">
+                CONFIRM ON WHATSAPP
             </button>
         </div>
     </div>
 
-    <script>
-        let isLogin = true;
+    <section class="max-w-4xl mx-auto py-20 px-6">
+        <div class="glass p-10 rounded-[2.5rem] border border-zinc-800">
+            <h2 class="text-2xl font-black italic text-red-600 mb-6 uppercase tracking-tighter">Message Admin</h2>
+            <form onsubmit="sendMessage(event)" class="space-y-4">
+                <input type="text" id="qName" placeholder="Your Name" required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600 transition-all">
+                <textarea id="qMsg" placeholder="Enter message..." required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600 transition-all h-32"></textarea>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl uppercase italic tracking-widest transition-all">
+                    SEND TO ADMIN
+                </button>
+            </form>
+        </div>
+    </section>
 
-        function toggleMode() {
-            isLogin = !isLogin;
-            document.getElementById('form-title').innerText = isLogin ? 'Login' : 'Register';
-            document.getElementById('form-desc').innerText = isLogin ? 'Welcome Back Waffler!' : 'Create your Waffle Account';
-            
-            // Register fields ko dikhane ya chhupane ke liye
-            document.getElementById('register-fields').classList.toggle('hidden', isLogin);
-            // Login identifier ko chhupane ke liye jab register ho raha ho
-            document.getElementById('identifier').classList.toggle('hidden', !isLogin);
-            
-            document.getElementById('toggle-btn').innerHTML = isLogin ? 
-                "Don't have an account? <span class='text-red-600'>Register Now</span>" : 
-                "Already a member? <span class='text-red-600'>Login Here</span>";
+    <footer class="bg-zinc-950 py-24 border-t border-zinc-900">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <h2 class="text-3xl font-black italic text-red-600 mb-6 uppercase">Our Journey</h2>
+            <p id="journey-text" class="text-zinc-400 italic text-lg leading-relaxed mb-16 max-w-4xl mx-auto"></p>
+            <div id="team-grid" class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center mb-20"></div>
+            <p onclick="location.href='/admin.html'" class="text-zinc-800 text-[10px] cursor-default select-none hover:text-zinc-700 transition">
+                &copy; 2026 CRUNCHY WAFFLE • Crafted with Passion
+            </p>
+        </div>
+    </footer>
+
+    <div onclick="toggleCart()" class="fixed bottom-8 right-8 bg-yellow-500 text-black p-4 rounded-full cursor-pointer z-[1001] shadow-2xl flex items-center gap-2 font-black hover:scale-110 transition active:scale-95">
+        <i class="fas fa-shopping-cart text-xl"></i>
+        <span id="cart-count">0</span>
+    </div>
+
+    <script>
+        let cart = [];
+        const ADMIN_NUM = "918087749069";
+
+        function loadGlobalLogo() {
+            fetch('/api/get-logo').then(res => res.json()).then(data => {
+                if(data && data.width) {
+                    const root = document.documentElement;
+                    root.style.setProperty('--logo-w', data.width);
+                    root.style.setProperty('--logo-x', data.x);
+                    root.style.setProperty('--logo-y', data.y);
+                }
+            }).catch(err => console.error(err));
         }
 
-        async function handleAuth(event) {
+        async function sendMessage(event) {
             event.preventDefault();
-            const endpoint = isLogin ? '/api/login' : '/api/register';
-            
-            // Server ko bhejne wala data
-            const data = isLogin ? {
-                identifier: document.getElementById('identifier').value,
-                password: document.getElementById('password').value
-            } : {
-                username: document.getElementById('reg-username').value,
-                phone: document.getElementById('reg-phone').value,
-                password: document.getElementById('password').value
-            };
-
+            const formData = { name: document.getElementById('qName').value, message: document.getElementById('qMsg').value };
             try {
-                const res = await fetch(endpoint, {
+                const res = await fetch('/api/messages', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(formData)
                 });
-                const result = await res.json();
-
-                if(res.ok) {
-                    alert(isLogin ? "Login Successful! 🧇" : "Account Created! Ab login karein.");
-                    if(isLogin) {
-                        localStorage.setItem('user', result.username);
-                        location.href = '/';
-                    } else {
-                        toggleMode();
-                    }
-                } else {
-                    alert(result.error || "Details check karein!");
-                }
-            } catch (err) {
-                alert("Server Error! Check your connection.");
-            }
+                if(res.ok) { alert("Waffle Team ko message mil gaya! 🧇🚀"); event.target.reset(); }
+            } catch (err) { alert("Error!"); }
         }
+
+        function updateCounter() {
+            const start = new Date('2024-08-22T00:00:00');
+            const now = new Date();
+            const diff = now - start;
+            const d = Math.floor(diff / (1000*60*60*24));
+            const h = Math.floor((diff / (1000*60*60)) % 24);
+            const m = Math.floor((diff / (1000*60)) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+            document.getElementById('live-counter').innerHTML = `
+                <div class="flex flex-col"><span class="text-red-600">${d}</span><span class="text-[9px] text-zinc-500">DAYS</span></div>
+                <span class="text-zinc-700">:</span>
+                <div class="flex flex-col"><span>${h.toString().padStart(2,'0')}</span><span class="text-[9px] text-zinc-500">HRS</span></div>
+                <span class="text-zinc-700">:</span>
+                <div class="flex flex-col"><span>${m.toString().padStart(2,'0')}</span><span class="text-[9px] text-zinc-500">MIN</span></div>
+                <span class="text-zinc-700">:</span>
+                <div class="flex flex-col"><span class="text-zinc-400">${s.toString().padStart(2,'0')}</span><span class="text-[9px] text-zinc-500">SEC</span></div>`;
+        }
+
+        function toggleCart() { document.getElementById('side-cart').classList.toggle('cart-open'); }
+        
+        function addToCart(n, p) {
+            const item = cart.find(i => i.name === n);
+            if(item) item.qty++; else cart.push({name: n, price: p, qty: 1});
+            updateUI(); if(cart.length === 1) toggleCart();
+        }
+
+        function updateUI() {
+            const total = cart.reduce((a, b) => a + (b.price * b.qty), 0);
+            document.getElementById('cart-total').innerText = `₹${total}`;
+            document.getElementById('cart-count').innerText = cart.reduce((a, b) => a + b.qty, 0);
+            document.getElementById('cart-items').innerHTML = cart.map((i, idx) => `
+                <div class="flex justify-between items-center bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800">
+                    <div><p class="font-bold text-xs uppercase italic">${i.name}</p><p class="text-red-600 text-[10px] font-black">₹${i.price} x ${i.qty}</p></div>
+                    <button onclick="cart.splice(${idx},1);updateUI()" class="text-zinc-600 hover:text-red-600"><i class="fas fa-trash-alt"></i></button>
+                </div>`).join('');
+        }
+
+        function sendWhatsAppOrder() {
+            if(!cart.length) return;
+            let msg = "Hello Crunchy Waffle! 🧇\n\n*Order Details:*\n";
+            cart.forEach(i => msg += `• *${i.name}* (${i.qty}x) = ₹${i.price * i.qty}\n`);
+            msg += `\n💰 *Total Bill: ₹${cart.reduce((a, b) => a + (b.price * b.qty), 0)}*`;
+            window.open(`https://wa.me/${ADMIN_NUM}?text=${encodeURIComponent(msg)}`);
+        }
+
+        async function init() {
+            loadGlobalLogo();
+            setInterval(updateCounter, 1000); 
+            updateCounter();
+            
+            try {
+                // Menu Load
+                const wRes = await fetch('/api/waffles'); 
+                const waffles = await wRes.json();
+                document.getElementById('waffle-list').innerHTML = waffles.map(w => `
+                    <div class="bg-zinc-900 rounded-[2rem] overflow-hidden border border-zinc-800 flex flex-col group shadow-2xl">
+                        <img src="${w.image}" class="w-full h-36 md:h-64 object-cover group-hover:scale-110 transition duration-700">
+                        <div class="p-4 md:p-6 flex-grow flex flex-col justify-between">
+                            <div><h3 class="text-[10px] md:text-xl font-black italic uppercase truncate">${w.name}</h3><p class="text-red-600 font-black text-lg md:text-2xl mt-1">₹${w.price}</p></div>
+                            <button onclick="addToCart('${w.name}', ${w.price})" class="w-full bg-red-600 text-white mt-4 py-3 rounded-xl font-bold text-[10px] md:text-sm uppercase hover:bg-white hover:text-red-600 transition">Add To Cart</button>
+                        </div>
+                    </div>`).join('');
+
+                // About Load
+                const aRes = await fetch('/api/about'); 
+                const aData = await aRes.json();
+                document.getElementById('journey-text').innerText = aData.journey || "Since 2024.";
+                const team = [
+                    {n: aData.ceoName, r: "CEO / Founder", p: aData.ceoPhoto},
+                    {n: aData.tm1Name, r: "Manager", p: aData.tm1Photo},
+                    {n: aData.tm2Name, r: "Chef", p: aData.tm2Photo}
+                ];
+                document.getElementById('team-grid').innerHTML = team.map(m => `
+                    <div class="group">
+                        <div class="relative w-24 h-24 md:w-40 md:h-40 mx-auto mb-4">
+                            <img src="${m.p || 'https://via.placeholder.com/150'}" class="w-full h-full rounded-full object-cover border-4 border-zinc-900 group-hover:border-red-600 transition-all duration-500 shadow-2xl">
+                        </div>
+                        <h4 class="text-white font-black italic uppercase text-sm md:text-lg tracking-tighter">${m.n || 'Team Member'}</h4>
+                        <p class="text-red-600 font-bold text-[8px] md:text-[10px] uppercase tracking-[0.2em]">${m.r}</p>
+                    </div>`).join('');
+            } catch(e) { console.error(e); }
+        }
+        init();
     </script>
 </body>
 </html>
