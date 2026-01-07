@@ -108,5 +108,69 @@
             else alert("Error! Check Password.");
         }
     </script>
+    <div class="max-w-4xl mx-auto p-6 bg-zinc-900 rounded-[2.5rem] border border-zinc-800 my-10 text-white">
+    <h2 class="text-2xl font-black italic text-red-600 mb-2 uppercase">Live Logo Designer</h2>
+    <p class="text-zinc-500 text-xs mb-8">Slider se size set karein aur Drag karke position.</p>
+
+    <div class="grid md:grid-cols-2 gap-10">
+        <div class="space-y-8">
+            <div>
+                <label class="block text-xs uppercase tracking-widest text-zinc-400 mb-4 font-bold">Logo Width (Size)</label>
+                <input type="range" id="wSlider" min="50" max="600" value="200" class="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-red-600">
+                <p class="text-right text-red-600 font-bold mt-2" id="wVal">200px</p>
+            </div>
+            <button onclick="saveLayout()" class="w-full bg-red-600 py-4 rounded-2xl font-black uppercase hover:scale-95 transition-all shadow-lg shadow-red-900/20">
+                Save Final Layout
+            </button>
+        </div>
+
+        <div class="relative h-64 bg-black rounded-3xl border-2 border-dashed border-zinc-800 flex items-center justify-center overflow-hidden" id="adminBoundary">
+            <img id="previewLogo" src="/images/logo.png" class="absolute w-[100px] cursor-move touch-none">
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+<script>
+    let posX = 0, posY = 0, currentWidth = 200;
+
+    // Slider for Width
+    const wSlider = document.getElementById('wSlider');
+    wSlider.oninput = function() {
+        currentWidth = this.value;
+        document.getElementById('wVal').innerText = currentWidth + "px";
+        document.getElementById('previewLogo').style.width = currentWidth + "px";
+    };
+
+    // Interact.js for Dragging
+    interact('#previewLogo').draggable({
+        listeners: {
+            move(event) {
+                posX += event.dx;
+                posY += event.dy;
+                event.target.style.transform = `translate(${posX}px, ${posY}px)`;
+            }
+        },
+        inertia: true,
+        modifiers: [
+            interact.modifiers.restrictRect({ restriction: '#adminBoundary', endOnly: true })
+        ]
+    });
+
+    function saveLayout() {
+        // Website ko variables bhejne ke liye
+        const layoutData = {
+            width: currentWidth + "px",
+            x: posX + "px",
+            y: posY + "px"
+        };
+        
+        // LocalStorage mein save (Abhi ke liye)
+        localStorage.setItem('crunchy_logo_layout', JSON.stringify(layoutData));
+        
+        alert("Layout Saved! Ab aapki website par logo yahin dikhega.");
+        // Note: Real-time update ke liye humne index.html mein variables lagaye hain.
+    }
+</script>
 </body>
 </html>
