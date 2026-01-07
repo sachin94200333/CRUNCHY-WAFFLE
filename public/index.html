@@ -119,6 +119,31 @@
             const m = document.getElementById('qMsg').value;
             window.open(`https://wa.me/${MY_PHONE}?text=Query from ${n}: ${m}`);
         };
+        <footer class="bg-zinc-950 py-20 border-t border-zinc-900">
+    <div class="max-w-6xl mx-auto px-6 text-center">
+        <h2 class="text-3xl font-black italic text-red-600 mb-6 uppercase">About Our Journey</h2>
+        <p id="journey-text" class="text-zinc-400 italic text-lg mb-16 max-w-3xl mx-auto">
+            Loading our story...
+        </p>
+        <div id="team-grid" class="grid grid-cols-3 gap-4 text-center">
+            </div>
+    </div>
+</footer>
+// About aur Team ka data fetch karne ke liye
+    const aRes = await fetch('/api/about');
+    const aData = await aRes.json();
+    document.getElementById('journey-text').innerText = aData.journey || "Hamari shuruat waffles ke crunch se hui.";
+    
+    const team = [
+        { n: aData.ceoName, p: aData.ceoPhoto },
+        { n: aData.tm1Name, p: aData.tm1Photo },
+        { n: aData.tm2Name, p: aData.tm2Photo }
+    ];
+    document.getElementById('team-grid').innerHTML = team.map(m => `
+        <div>
+            <img src="${m.p || 'https://via.placeholder.com/150'}" class="w-20 h-20 md:w-32 md:h-32 rounded-full mx-auto object-cover border-2 border-red-600">
+            <h4 class="text-[10px] md:text-sm font-bold mt-2 uppercase">${m.n || 'Legend'}</h4>
+        </div>`).join('');
 
         async function init() {
             const res = await fetch('/api/waffles');
