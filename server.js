@@ -55,16 +55,68 @@ app.post('/api/about', async (req, res) => {
     }
 });
 
-// --- YAHAN SE NAYA LOGO CODE SHURU ---
-let savedLayout = { width: "200px", x: "0px", y: "0px" };
+// 1. Logo Schema (Database Model)
+const LogoSchema = new mongoose.Schema({
+    width: { type: String, default: "200px" },
+    x: { type: String, default: "0px" },
+    y: { type: String, default: "0px" }
+});
+const LogoSettings = mongoose.model('LogoSettings', LogoSchema);
 
-app.post('/api/save-logo', (req, res) => {
-    savedLayout = req.body;
-    res.json({ success: true });
+// 2. Customer Message Schema
+const MsgSchema = new mongoose.Schema({
+    name: String,
+    message: String,
+    date: { type: Date, default: Date.now }
+});
+const Message = mongoose.model('Message', MsgSchema);
+
+// 3. Save Logo API (Database Sync)
+app.post('/api/save-logo', async (req, res) => {
+    try {
+        let settings = await LogoSettings.findOne();
+        if (settings) {
+            Object.assign(settings, req.body);
+            await settings.save();
+        } else {
+            settings = new LogoSettings(req.body);
+            await settings.save();
+        }
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-app.get('/api/get-logo', (req, res) => {
-    res.json(savedLayout);
+// 4. Get Logo API
+app.get('/api/get-logo', async (req, res) => {
+    try {
+        const settings = await LogoSettings.findOne();
+        res.json(settings || { width: "200px", x: "0px", y: "0px" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 5. Customer Message Receive API
+app.post('/api/messages', async (req, res) => {
+    try {
+        const newMsg = new Message(req.body);
+        await newMsg.save();
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// 6. Get Messages (For Admin Inbox)
+app.get('/api/get-messages', async (req, res) => {
+    try {
+        const messages = await Message.find().sort({ date: -1 });
+        res.json(messages);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 // --- NAYA LOGO CODE KHATAM ---
 

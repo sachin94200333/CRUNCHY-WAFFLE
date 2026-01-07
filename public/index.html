@@ -84,11 +84,13 @@
     <section class="max-w-4xl mx-auto py-20 px-6">
         <div class="glass p-10 rounded-[2.5rem] border border-zinc-800">
             <h2 class="text-2xl font-black italic text-red-600 mb-6 uppercase">Message Admin</h2>
-            <form id="queryForm" class="space-y-4">
-                <input type="text" id="qName" placeholder="Your Name" class="w-full bg-black/40 p-4 rounded-xl border border-zinc-800 outline-none focus:border-red-600 transition" required>
-                <textarea id="qMsg" placeholder="Enter message..." class="w-full bg-black/40 p-4 h-32 rounded-xl border border-zinc-800 outline-none focus:border-red-600 transition" required></textarea>
-                <button type="submit" class="w-full bg-red-600 py-4 rounded-xl font-black hover:bg-white hover:text-red-600 transition uppercase tracking-widest">Send To Admin</button>
-            </form>
+     <form onsubmit="sendMessage(event)" class="space-y-4">
+    <input type="text" id="qName" placeholder="Your Name" required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600 transition-all">
+    <textarea id="qMsg" placeholder="Enter message..." required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600 transition-all h-32"></textarea>
+    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl uppercase italic tracking-widest transition-all">
+        SEND TO ADMIN
+    </button>
+</form>
         </div>
     </section>
 
@@ -126,6 +128,36 @@
     
     // Page load hote hi ise chalao
     window.onload = loadGlobalLogo;
+</script>
+<script>
+    // --- Ye index.html mein sabse niche script tag ke andar daal do ---
+    async function sendMessage(event) {
+        event.preventDefault(); // Page refresh hone se rokne ke liye
+        
+        // Form se data nikalna (IDs match honi chahiye)
+        const nameInput = event.target.querySelector('input[type="text"]');
+        const msgInput = event.target.querySelector('textarea');
+
+        const formData = {
+            name: nameInput.value,
+            message: msgInput.value
+        };
+
+        try {
+            const res = await fetch('/api/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if(res.ok) {
+                alert("Waffle Team ko aapka message mil gaya! 🧇🚀");
+                event.target.reset(); // Form khali karne ke liye
+            }
+        } catch (err) {
+            alert("Oops! Message nahi gaya. Net check karein.");
+        }
+    }
 </script>
 
     <script>

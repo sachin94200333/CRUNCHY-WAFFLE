@@ -129,6 +129,18 @@
         </div>
     </div>
 </div>
+<div class="max-w-4xl mx-auto p-6 bg-zinc-900 rounded-[2.5rem] border border-zinc-800 mt-10 shadow-2xl">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-black text-red-600 uppercase italic tracking-tighter">Customer Inbox 📩</h2>
+        <button onclick="loadMessages()" class="text-[10px] bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-full uppercase font-bold transition-all">
+            Refresh Messages
+        </button>
+    </div>
+    
+    <div id="messageList" class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+        <p class="text-zinc-500 italic text-center py-10">Messages load ho rahe hain...</p>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 <script>
@@ -178,6 +190,35 @@
     }
     if(res.ok) alert("Duniya bhar ke liye settings save ho gayi! 🌍");
     // Ye saveLayout function ka aakhri bracket hai
+    // --- Yahan se paste karein (Purane function ke bracket ke turant baad) ---
+
+async function loadMessages() {
+    try {
+        const res = await fetch('/api/get-messages');
+        const msgs = await res.json();
+        const container = document.getElementById('messageList');
+        
+        if (!msgs || msgs.length === 0) {
+            container.innerHTML = '<p class="text-zinc-500 text-center py-10 italic">Abhi koi message nahi aaya hai.</p>';
+            return;
+        }
+
+        container.innerHTML = msgs.map(m => `
+            <div class="bg-black p-5 rounded-3xl border border-zinc-800 mb-4 hover:border-red-600/50 transition-all">
+                <div class="flex justify-between items-start mb-2">
+                    <h4 class="text-white font-black text-lg uppercase">${m.name}</h4>
+                    <span class="text-[10px] text-zinc-600 font-bold uppercase">${new Date(m.date).toLocaleString('en-IN')}</span>
+                </div>
+                <p class="text-zinc-400 text-sm leading-relaxed">${m.message}</p>
+            </div>
+        `).join('');
+    } catch (err) {
+        console.error("Messages load nahi ho paye:", err);
+    }
+}
+
+// Page khulte hi messages dikhao
+loadMessages();
 </script>
 
 </body>
