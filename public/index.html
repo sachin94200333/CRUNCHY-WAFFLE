@@ -13,25 +13,13 @@
         .cart-open { transform: translateX(0); }
         body { background-color: #000; color: white; scroll-behavior: smooth; font-family: sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
-    </style>
-    <style>
-        :root {
-            --logo-w: 200px;
-            --logo-x: 0px;
-            --logo-y: 0px;
-        }
-        #main-logo {
-            width: var(--logo-w) !important;
-            transform: translate(var(--logo-x), var(--logo-y)) !important;
-            cursor: move;
-            touch-action: none;
-        }
+        :root { --logo-w: 200px; --logo-x: 0px; --logo-y: 0px; }
+        #main-logo { width: var(--logo-w) !important; transform: translate(var(--logo-x), var(--logo-y)) !important; }
     </style>
 </head>
 <body>
 
-   <header class="relative min-h-[500px] h-[60vh] flex flex-col items-center justify-center overflow-hidden border-b-2 border-red-600 bg-black">
-        
+    <header class="relative min-h-[500px] h-[60vh] flex flex-col items-center justify-center overflow-hidden border-b-2 border-red-600 bg-black">
         <div id="slideshow" class="absolute inset-0 z-0">
             <div class="bg-slide active" style="background-image: url('https://images.unsplash.com/photo-1562435503-903ba7ebaf78?q=80&w=2070')"></div>
         </div>
@@ -45,15 +33,10 @@
 
         <div class="relative z-10 text-center flex flex-col items-center justify-center gap-6 pt-10">
             <div class="flex items-center justify-center min-h-[150px]">
-                <img id="main-logo" src="/images/logo.png" 
-                     class="drop-shadow-[0_10px_10px_rgba(255,0,0,0.3)] animate-pulse transition-all duration-300"
-                     style="width: var(--logo-w); transform: translate(var(--logo-x), var(--logo-y));">
+                <img id="main-logo" src="/images/logo.png" class="drop-shadow-[0_10px_10px_rgba(255,0,0,0.3)] animate-pulse transition-all duration-300">
             </div>
-            
             <div class="mt-4">
-                <h1 class="text-4xl md:text-7xl font-black italic text-red-600 drop-shadow-[0_5px_5px_rgba(0,0,0,1)] uppercase tracking-tighter leading-none">
-                    Crunchy Waffle
-                </h1>
+                <h1 class="text-4xl md:text-7xl font-black italic text-red-600 drop-shadow-[0_5px_5px_rgba(0,0,0,1)] uppercase tracking-tighter leading-none">Crunchy Waffle</h1>
                 <p class="text-[8px] md:text-sm tracking-[0.3em] text-white/60 uppercase mt-2 italic font-bold">The Ultimate Waffle Experience</p>
             </div>
         </div>
@@ -82,21 +65,15 @@
     </div>
 
     <section class="max-w-4xl mx-auto py-20 px-6">
-    <div class="glass p-10 rounded-[2.5rem] border border-zinc-800">
-        <h2 class="text-2xl font-black italic text-red-600 mb-6 uppercase tracking-tighter">Message Admin</h2>
-        
-        <form onsubmit="sendMessage(event)" class="space-y-4">
-            <input type="text" id="qName" placeholder="Your Name" required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600 transition-all">
-            <textarea id="qMsg" placeholder="Enter message..." required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600 transition-all h-32"></textarea>
-            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl uppercase italic tracking-widest transition-all shadow-lg shadow-red-600/20">
-                SEND TO ADMIN
-            </button>
-        </form>
-        </div>
-</section>
-
-<div id="menu-container">
-    </div>
+        <div class="glass p-10 rounded-[2.5rem] border border-zinc-800">
+            <h2 class="text-2xl font-black italic text-red-600 mb-6 uppercase tracking-tighter">Message Admin</h2>
+            <form onsubmit="sendMessage(event)" class="space-y-4">
+                <input type="text" id="qName" placeholder="Your Name" required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600 transition-all">
+                <textarea id="qMsg" placeholder="Enter message..." required class="w-full bg-black/40 border border-zinc-800 p-3 rounded-xl text-white outline-none focus:border-red-600 transition-all h-32"></textarea>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl uppercase italic tracking-widest transition-all">
+                    SEND TO ADMIN
+                </button>
+            </form>
         </div>
     </section>
 
@@ -105,7 +82,6 @@
             <h2 class="text-3xl font-black italic text-red-600 mb-6 uppercase">Our Journey</h2>
             <p id="journey-text" class="text-zinc-400 italic text-lg leading-relaxed mb-16 max-w-4xl mx-auto"></p>
             <div id="team-grid" class="grid grid-cols-3 gap-6 text-center mb-20"></div>
-            
             <p onclick="location.href='/admin.html'" class="text-zinc-800 text-[10px] cursor-default select-none hover:text-zinc-700 transition">
                 &copy; 2026 CRUNCHY WAFFLE • Crafted with Passion
             </p>
@@ -116,61 +92,46 @@
         <i class="fas fa-shopping-cart text-xl"></i>
         <span id="cart-count">0</span>
     </div>
-    <script>
-    // Ye script har customer ke liye server se logo ki settings uthayegi
-    function loadGlobalLogo() {
-        fetch('/api/get-logo')
-            .then(res => res.json())
-            .then(data => {
-                if(data && data.width) {
-                    const root = document.documentElement;
-                    root.style.setProperty('--logo-w', data.width);
-                    root.style.setProperty('--logo-x', data.x);
-                    root.style.setProperty('--logo-y', data.y);
-                }
-            })
-            .catch(err => console.error("Logo load nahi ho paya:", err));
-    }
-    
-    // Page load hote hi ise chalao
-    window.onload = loadGlobalLogo;
-</script>
-<script>
-    // --- Ye index.html mein sabse niche script tag ke andar daal do ---
-    async function sendMessage(event) {
-        event.preventDefault(); // Page refresh hone se rokne ke liye
-        
-        // Form se data nikalna (IDs match honi chahiye)
-        const nameInput = event.target.querySelector('input[type="text"]');
-        const msgInput = event.target.querySelector('textarea');
-
-        const formData = {
-            name: nameInput.value,
-            message: msgInput.value
-        };
-
-        try {
-            const res = await fetch('/api/messages', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-
-            if(res.ok) {
-                alert("Waffle Team ko aapka message mil gaya! 🧇🚀");
-                event.target.reset(); // Form khali karne ke liye
-            }
-        } catch (err) {
-            alert("Oops! Message nahi gaya. Net check karein.");
-        }
-    }
-</script>
 
     <script>
         let cart = [];
         const ADMIN_NUM = "918087749069";
 
-        // 1. LIVE COUNTER (Since 22-08-2024)
+        // 1. LOGO LOAD
+        function loadGlobalLogo() {
+            fetch('/api/get-logo')
+                .then(res => res.json())
+                .then(data => {
+                    if(data && data.width) {
+                        const root = document.documentElement;
+                        root.style.setProperty('--logo-w', data.width);
+                        root.style.setProperty('--logo-x', data.x);
+                        root.style.setProperty('--logo-y', data.y);
+                    }
+                }).catch(err => console.error(err));
+        }
+
+        // 2. SEND MESSAGE
+        async function sendMessage(event) {
+            event.preventDefault();
+            const formData = {
+                name: document.getElementById('qName').value,
+                message: document.getElementById('qMsg').value
+            };
+            try {
+                const res = await fetch('/api/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                if(res.ok) {
+                    alert("Waffle Team ko message mil gaya! 🧇🚀");
+                    event.target.reset();
+                }
+            } catch (err) { alert("Error sending message."); }
+        }
+
+        // 3. COUNTER & UI
         function updateCounter() {
             const start = new Date('2024-08-22T00:00:00');
             const now = new Date();
@@ -188,13 +149,7 @@
                 <span class="text-zinc-700">:</span>
                 <div class="flex flex-col"><span class="text-zinc-400">${s.toString().padStart(2,'0')}</span><span class="text-[9px] text-zinc-500">SEC</span></div>`;
         }
-        setInterval(updateCounter, 1000); updateCounter();
 
-        // 2. SLIDESHOW
-        let cur = 0; const slides = document.querySelectorAll('.bg-slide');
-        setInterval(() => { slides[cur].classList.remove('active'); cur = (cur + 1) % slides.length; slides[cur].classList.add('active'); }, 4500);
-
-        // 3. CART LOGIC
         function toggleCart() { document.getElementById('side-cart').classList.toggle('cart-open'); }
         function addToCart(n, p) {
             const item = cart.find(i => i.name === n);
@@ -211,8 +166,6 @@
                     <button onclick="cart.splice(${idx},1);updateUI()" class="text-zinc-600 hover:text-red-600"><i class="fas fa-trash-alt"></i></button>
                 </div>`).join('');
         }
-
-        // 4. WHATSAPP ORDER (Multi-item)
         function sendWhatsAppOrder() {
             if(!cart.length) return;
             let msg = "Hello Crunchy Waffle! 🧇\n\n*Naya Order Details:*\n";
@@ -221,33 +174,29 @@
             window.open(`https://wa.me/${ADMIN_NUM}?text=${encodeURIComponent(msg)}`);
         }
 
-        // 5. DATA INIT
+        // 4. INIT ALL
         async function init() {
+            loadGlobalLogo();
+            setInterval(updateCounter, 1000); updateCounter();
             try {
                 const wRes = await fetch('/api/waffles'); const waffles = await wRes.json();
                 document.getElementById('waffle-list').innerHTML = waffles.map(w => `
                     <div class="bg-zinc-900 rounded-[2rem] overflow-hidden border border-zinc-800 flex flex-col group shadow-2xl">
                         <img src="${w.image}" class="w-full h-36 md:h-64 object-cover group-hover:scale-110 transition duration-700">
                         <div class="p-4 md:p-6 flex-grow flex flex-col justify-between">
-                            <div><h3 class="text-[10px] md:text-xl font-black italic uppercase truncate">${w.name}</h3>
-                            <p class="text-red-600 font-black text-lg md:text-2xl mt-1">₹${w.price}</p></div>
+                            <div><h3 class="text-[10px] md:text-xl font-black italic uppercase truncate">${w.name}</h3><p class="text-red-600 font-black text-lg md:text-2xl mt-1">₹${w.price}</p></div>
                             <button onclick="addToCart('${w.name}', ${w.price})" class="w-full bg-red-600 text-white mt-4 py-3 rounded-xl font-bold text-[10px] md:text-sm uppercase hover:bg-white hover:text-red-600 transition">Add To Cart</button>
                         </div>
                     </div>`).join('');
 
                 const aRes = await fetch('/api/about'); const aData = await aRes.json();
-                document.getElementById('journey-text').innerText = aData.journey || "Since 22-08-2024.";
+                document.getElementById('journey-text').innerText = aData.journey || "Since 2024.";
                 const team = [{n: aData.ceoName, p: aData.ceoPhoto}, {n: aData.tm1Name, p: aData.tm1Photo}, {n: aData.tm2Name, p: aData.tm2Photo}];
                 document.getElementById('team-grid').innerHTML = team.map(m => `
-                    <div><img src="${m.p || 'https://via.placeholder.com/150'}" class="w-16 h-16 md:w-32 md:h-32 rounded-full mx-auto object-cover border-2 border-red-600 shadow-xl">
+                    <div><img src="${m.p || 'https://via.placeholder.com/150'}" class="w-16 h-16 md:w-32 md:h-32 rounded-full mx-auto object-cover border-2 border-red-600">
                     <h4 class="text-[10px] md:text-xs font-bold mt-2 uppercase text-zinc-500">${m.n || 'Team'}</h4></div>`).join('');
             } catch(e) { console.error(e); }
         }
-
-        document.getElementById('queryForm').onsubmit = (e) => {
-            e.preventDefault();
-            window.open(`https://wa.me/${ADMIN_NUM}?text=Query from ${document.getElementById('qName').value}: ${document.getElementById('qMsg').value}`);
-        };
         init();
     </script>
 </body>
