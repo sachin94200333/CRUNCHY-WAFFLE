@@ -28,8 +28,21 @@
         </div>
     </div>
 
+    <div id="add-money-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[4000] flex items-center justify-center p-4 text-center">
+        <div class="glass max-w-md w-full p-8 rounded-[2.5rem] border border-green-600/30">
+            <h2 class="text-2xl font-black italic text-green-500 uppercase mb-4">Add Wallet Money 💰</h2>
+            <img id="add-money-qr" src="" class="w-48 h-48 mx-auto rounded-xl border-4 border-white mb-6">
+            <input type="number" id="addAmount" placeholder="Amount (₹)" class="w-full bg-black border border-zinc-800 p-3 rounded-xl text-center mb-4 outline-none focus:border-green-600">
+            <input type="text" id="addTxId" placeholder="Transaction ID" class="w-full bg-black border border-zinc-800 p-3 rounded-xl text-center mb-6 outline-none">
+            <div class="flex gap-2">
+                <button onclick="closeAddMoney()" class="flex-1 bg-zinc-800 py-3 rounded-xl font-bold uppercase text-[10px]">Cancel</button>
+                <button onclick="submitAddMoneyRequest()" class="flex-1 bg-green-600 py-3 rounded-xl font-black uppercase text-[10px]">Submit Request</button>
+            </div>
+        </div>
+    </div>
+
     <div class="nav-btn">
-        <div id="user-logged-in" class="hidden flex items-center gap-3">
+        <div id="user-logged-in" class="hidden flex flex-col gap-2">
             <div class="glass px-4 py-2 rounded-full border border-zinc-800 flex items-center gap-3">
                 <div class="text-left">
                     <p id="nav-username" class="text-[9px] font-black text-white uppercase italic tracking-tighter"></p>
@@ -40,6 +53,9 @@
                 </div>
                 <button onclick="logout()" class="text-zinc-500 hover:text-red-600 ml-2"><i class="fas fa-sign-out-alt"></i></button>
             </div>
+            <button onclick="openAddMoney()" class="bg-green-600/20 text-green-500 text-[8px] font-black uppercase px-4 py-1 rounded-full border border-green-600/30 self-start animate-pulse">
+                + Add Money
+            </button>
         </div>
         <button id="login-guest-btn" onclick="location.href='/auth.html'" class="glass px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest text-zinc-400 border border-zinc-800">
             <i class="fas fa-user-circle mr-2"></i>Login / Register
@@ -70,19 +86,34 @@
         </div>
     </header>
 
-    <div id="checkout-modal" class="fixed inset-0 bg-black/90 z-[3000] hidden flex items-center justify-center p-4">
-        <div class="glass max-w-md w-full p-8 rounded-[2.5rem] border border-red-600/30 text-center">
-            <h2 class="text-2xl font-black italic text-red-600 uppercase mb-4">Final Receipt</h2>
-            <div id="invoice-details" class="text-left space-y-2 text-sm border-y border-zinc-800 py-4 mb-4 font-mono uppercase"></div>
+    <div id="checkout-modal" class="fixed inset-0 bg-black/95 z-[3000] hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="glass max-w-md w-full p-8 rounded-[3rem] border border-zinc-800 text-center my-auto">
+            <h2 class="text-3xl font-black italic text-red-600 uppercase mb-6">Checkout</h2>
             
-            <p class="text-[10px] text-zinc-400 mb-4 italic">Scan & Pay remaining amount:</p>
-            <img src="/images/qr.png" id="admin-qr" class="w-40 h-40 mx-auto rounded-xl border-4 border-white mb-4">
+            <div class="flex bg-black p-1 rounded-2xl border border-zinc-800 mb-6">
+                <button onclick="togglePayMode('Online')" id="mode-online" class="flex-1 py-3 rounded-xl font-black text-[10px] uppercase bg-red-600 text-white">Online/Wallet</button>
+                <button onclick="togglePayMode('COD')" id="mode-cod" class="flex-1 py-3 rounded-xl font-black text-[10px] uppercase text-zinc-500">COD</button>
+            </div>
+
+            <div id="invoice-details" class="text-left space-y-2 text-sm border-b border-zinc-800 pb-4 mb-4 font-mono uppercase"></div>
             
-            <input type="text" id="txIdInput" placeholder="ENTER TRANSACTION ID" class="w-full bg-black border border-zinc-800 p-3 rounded-xl text-center text-white mb-4 outline-none focus:border-red-600">
+            <div id="online-payment-area">
+                <p class="text-[9px] text-zinc-500 mb-4 uppercase font-bold text-center">Scan QR if paying online:</p>
+                <img src="" id="admin-qr" class="w-44 h-44 mx-auto rounded-xl border-4 border-white mb-6">
+                
+                <input type="text" id="txIdInput" placeholder="TRANSACTION ID" class="w-full bg-black border border-zinc-800 p-4 rounded-2xl text-center text-white mb-3 outline-none">
+                <p class="text-zinc-600 text-[8px] mb-3 uppercase">OR UPLOAD SCREENSHOT</p>
+                <input type="file" id="ssInput" accept="image/*" class="w-full bg-black border border-zinc-800 p-3 rounded-2xl text-[10px] text-zinc-400 mb-6">
+            </div>
+
+            <div id="cod-area" class="hidden py-10">
+                <p class="text-red-500 font-black italic uppercase text-sm">Cash on Delivery Selected</p>
+                <p class="text-zinc-500 text-[10px] mt-2 italic">Waiting for Admin approval after submitting.</p>
+            </div>
             
-            <div class="flex gap-2">
-                <button onclick="closeCheckout()" class="flex-1 bg-zinc-800 py-3 rounded-xl font-bold uppercase text-[10px]">Cancel</button>
-                <button onclick="submitOrderFinal()" class="flex-1 bg-green-600 py-3 rounded-xl font-black uppercase text-[10px]">Submit Order</button>
+            <div class="flex gap-3">
+                <button onclick="closeCheckout()" class="flex-1 bg-zinc-900 py-4 rounded-2xl font-bold uppercase text-[10px] border border-zinc-800">Cancel</button>
+                <button onclick="submitOrderFinal()" class="flex-1 bg-red-600 py-4 rounded-2xl font-black uppercase text-[10px]">Submit Order</button>
             </div>
         </div>
     </div>
@@ -154,11 +185,11 @@
     </div>
 
     <script>
-        let cart = []; let discount = 0; let userBalance = 0;
+        let cart = []; let discount = 0; let userBalance = 0; let currentPayMode = 'Online';
         const ADMIN_NUM = "918087749069";
         const currentUser = localStorage.getItem('user');
 
-        // Slideshow
+        // Slideshow Logic (Restored)
         let slideIndex = 0;
         function nextSlide() {
             const slides = document.querySelectorAll('.bg-slide');
@@ -171,9 +202,20 @@
 
         function logout() { localStorage.removeItem('user'); location.reload(); }
 
-        // List 1: Checkout Logic
+        function togglePayMode(mode) {
+            currentPayMode = mode;
+            document.getElementById('mode-online').className = mode === 'Online' ? 'flex-1 py-3 rounded-xl font-black text-[10px] uppercase bg-red-600 text-white' : 'flex-1 py-3 rounded-xl font-black text-[10px] uppercase text-zinc-500';
+            document.getElementById('mode-cod').className = mode === 'COD' ? 'flex-1 py-3 rounded-xl font-black text-[10px] uppercase bg-red-600 text-white' : 'flex-1 py-3 rounded-xl font-black text-[10px] uppercase text-zinc-500';
+            document.getElementById('online-payment-area').classList.toggle('hidden', mode === 'COD');
+            document.getElementById('cod-area').classList.toggle('hidden', mode === 'Online');
+        }
+
         async function openCheckout() {
             if(!cart.length) return alert("Cart empty!");
+            const qrRes = await fetch('/api/get-qr');
+            const qrData = await qrRes.json();
+            document.getElementById('admin-qr').src = qrData.qrUrl;
+
             const subtotal = cart.reduce((a, b) => a + (b.price * b.qty), 0) - discount;
             const walletUsed = Math.min(userBalance, subtotal);
             const cashPay = subtotal - walletUsed;
@@ -192,11 +234,16 @@
 
         async function submitOrderFinal() {
             const txId = document.getElementById('txIdInput').value;
+            const ss = document.getElementById('ssInput').files[0];
             const subtotal = cart.reduce((a, b) => a + (b.price * b.qty), 0) - discount;
             const walletUsed = Math.min(userBalance, subtotal);
             const cashPay = subtotal - walletUsed;
 
-            if(cashPay > 0 && !txId) return alert("Please enter Transaction ID for Online Payment!");
+            if(currentPayMode === 'Online' && cashPay > 0 && !txId && !ss) {
+                return alert("Online payment ke liye Transaction ID ya Screenshot daalo!");
+            }
+
+            const finalStatus = (cashPay <= 0 && currentPayMode === 'Online') ? 'Approved' : 'Pending';
 
             const orderData = {
                 username: currentUser || "Guest",
@@ -204,7 +251,8 @@
                 total: subtotal,
                 walletDeducted: walletUsed,
                 cashPaid: cashPay,
-                transactionId: txId || "WALLET_FULL"
+                transactionId: txId || (ss ? "Screenshot Attached" : (currentPayMode === 'COD' ? "COD Order" : "WALLET_PAID")),
+                status: finalStatus
             };
 
             const res = await fetch('/api/orders/create', {
@@ -214,9 +262,9 @@
             });
 
             if(res.ok) {
-                let msg = `*CRUNCHY WAFFLE ORDER*\nUser: ${orderData.username}\nItems: ${cart.map(i=>i.name).join(', ')}\nTotal: ₹${subtotal}\nWallet: -₹${walletUsed}\nCash: ₹${cashPay}\nTX ID: ${orderData.transactionId}`;
+                let msg = `*ORDER*\nUser: ${orderData.username}\nTotal: ₹${subtotal}\nPay: ${currentPayMode}\nStatus: ${finalStatus}`;
                 window.open(`https://wa.me/${ADMIN_NUM}?text=${encodeURIComponent(msg)}`);
-                alert("Order Placed Successfully!");
+                alert(finalStatus === 'Approved' ? "Confirmed! 🧇" : "Submitted for Approval!");
                 location.reload();
             }
         }
@@ -242,11 +290,7 @@
 
         async function sendMessage(event) {
             event.preventDefault();
-            const msgData = { 
-                username: currentUser || "Guest", 
-                name: document.getElementById('qName').value, 
-                message: document.getElementById('qMsg').value 
-            };
+            const msgData = { username: currentUser || "Guest", name: document.getElementById('qName').value, message: document.getElementById('qMsg').value };
             const res = await fetch('/api/messages', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(msgData) });
             if(res.ok) { alert("Sent!"); event.target.reset(); if(currentUser) loadMessages(); }
         }
@@ -259,7 +303,7 @@
             document.getElementById('msg-history-list').innerHTML = msgs.map(m => `
                 <div class="bg-zinc-900/40 p-4 rounded-2xl border border-zinc-800">
                     <p class="text-zinc-400 text-xs italic">Me: ${m.message}</p>
-                    ${m.reply ? `<p class="text-blue-500 text-xs font-bold mt-2"><i class="fas fa-reply mr-1"></i> Admin: ${m.reply}</p>` : `<p class="text-zinc-600 text-[9px] mt-1 italic">Waiting for reply...</p>`}
+                    ${m.reply ? `<p class="text-blue-500 text-xs font-bold mt-2">Admin: ${m.reply}</p>` : `<p class="text-zinc-600 text-[9px] mt-1">Waiting...</p>`}
                 </div>`).join('');
         }
 
@@ -292,27 +336,31 @@
                 </div>`).join('');
         }
 
+        function openAddMoney() { 
+            fetch('/api/get-qr').then(r=>r.json()).then(d=>document.getElementById('add-money-qr').src = d.qrUrl);
+            document.getElementById('add-money-modal').classList.remove('hidden'); 
+        }
+        function closeAddMoney() { document.getElementById('add-money-modal').classList.add('hidden'); }
+        async function submitAddMoneyRequest() {
+            const amt = document.getElementById('addAmount').value;
+            const tx = document.getElementById('addTxId').value;
+            if(!amt || !tx) return alert("Details bharo!");
+            window.open(`https://wa.me/${ADMIN_NUM}?text=${encodeURIComponent(`*RECHARGE*\nAmt: ₹${amt}\nTX: ${tx}`)}`);
+            closeAddMoney();
+        }
+
         async function init() {
             updateCounter();
-            // Load Offer Bar (List 2)
             fetch('/api/get-offer').then(r=>r.json()).then(d=>document.getElementById('offer-text').innerText = d.text);
-            
             fetch('/api/get-logo').then(r => r.json()).then(d => {
                 document.documentElement.style.setProperty('--logo-w', d.width);
                 document.documentElement.style.setProperty('--logo-x', d.x);
                 document.documentElement.style.setProperty('--logo-y', d.y);
             });
-
             if(currentUser) {
                 document.getElementById('user-logged-in').classList.remove('hidden');
                 document.getElementById('login-guest-btn').classList.add('hidden');
                 document.getElementById('nav-username').innerText = currentUser;
-                fetch('/api/login', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ identifier: currentUser, password: "" }) // Logic to fetch data via server
-                });
-                // Simple fetch for balance and points
                 fetch('/api/get-users', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({adminPassword: "bypass_for_user_own_data"}) }).then(r=>r.json()).then(users=>{
                     const me = users.find(u => u.username === currentUser);
                     if(me) {
@@ -321,13 +369,10 @@
                         document.getElementById('nav-points').innerText = `P: ${me.loyaltyPoints || 0}`;
                     }
                 });
-                loadHistory();
-                loadMessages();
+                loadHistory(); loadMessages();
             }
-
             const wRes = await fetch('/api/waffles'); const waffles = await wRes.json();
             document.getElementById('waffle-list').innerHTML = waffles.map(w => `<div class="bg-zinc-900 rounded-[2rem] overflow-hidden border border-zinc-800 flex flex-col group shadow-2xl"><img src="${w.image}" class="w-full h-36 md:h-64 object-cover group-hover:scale-110 transition duration-700"><div class="p-4 md:p-6 flex-grow flex flex-col justify-between"><div><h3 class="text-[10px] md:text-xl font-black italic uppercase truncate">${w.name}</h3><p class="text-red-600 font-black text-lg mt-1">₹${w.price}</p></div><button onclick="addToCart('${w.name}', ${w.price})" class="w-full bg-red-600 text-white mt-4 py-3 rounded-xl font-bold uppercase hover:bg-white hover:text-red-600 transition">Add To Cart</button></div></div>`).join('');
-            
             const aRes = await fetch('/api/about'); const aData = await aRes.json();
             document.getElementById('journey-text').innerText = aData.journey || "Since 2024.";
             document.getElementById('call-btn').href = `tel:${aData.phone || ''}`;

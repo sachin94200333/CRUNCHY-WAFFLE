@@ -3,233 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crunchy Waffle Admin Pro</title>
+    <title>Crunchy Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #09090b; color: white; font-family: 'Inter', sans-serif; }
+        .admin-card { background: #18181b; border: 1px solid #27272a; border-radius: 1.5rem; padding: 1.5rem; transition: 0.3s; }
+        .admin-card:hover { border-color: #ef4444; }
+        .glass-input { background: #000; border: 1px solid #27272a; border-radius: 0.75rem; color: white; outline: none; transition: 0.3s; width: 100%; padding: 12px; }
+        .glass-input:focus { border-color: #ef4444; }
+        #admin-content { display: none; }
+        #lock-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; text-align: center; }
+    </style>
 </head>
-<body class="bg-gray-100 p-5 font-sans">
-    <div class="max-w-4xl mx-auto space-y-8">
+<body>
+
+    <div id="lock-screen">
+        <div class="max-w-md w-full p-8">
+            <img src="/images/logo.png" class="w-32 mx-auto mb-6 animate-pulse">
+            <h1 class="text-2xl font-black italic text-red-600 uppercase mb-6 tracking-tighter">Admin Authorization</h1>
+            <input type="password" id="entryPass" placeholder="Enter Admin Password" class="glass-input text-center text-lg mb-4 font-bold tracking-widest">
+            <button onclick="checkAuth()" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase italic tracking-widest hover:bg-white hover:text-red-600 transition">Unlock Dashboard</button>
+            <p id="lock-msg" class="text-red-500 text-[10px] mt-4 uppercase font-bold hidden">Access Denied!</p>
+        </div>
+    </div>
+
+    <div id="admin-content" class="max-w-6xl mx-auto p-4 md:p-8 space-y-8">
+        
         <div class="flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-red-600 uppercase italic tracking-tighter">Admin Dashboard</h1>
-            <button onclick="location.href='/'" class="text-[10px] font-bold bg-zinc-800 text-white px-4 py-2 rounded-full uppercase">Back to Site</button>
+            <h1 class="text-4xl font-black text-red-600 uppercase italic tracking-tighter">Command Center</h1>
+            <button onclick="location.href='/'" class="bg-zinc-900 border border-zinc-800 px-6 py-2 rounded-full text-[10px] font-bold uppercase">Back to Site</button>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow border-b-4 border-red-600">
-            <label class="block text-[10px] font-bold uppercase text-zinc-400 mb-2">Admin Security Key</label>
-            <input type="password" id="adminPass" placeholder="Enter Admin Password" class="w-full p-3 border rounded text-lg font-bold border-red-300 outline-none focus:ring-2 focus:ring-red-600">
-        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="admin-card">
+                <h2 class="text-lg font-black text-red-600 uppercase italic mb-4 italic">📢 Offer of the Day</h2>
+                <div class="flex gap-2">
+                    <input type="text" id="offerText" placeholder="Aaj ka special offer..." class="glass-input">
+                    <button onclick="updateOffer()" class="bg-red-600 px-6 py-3 rounded-xl font-black uppercase text-[10px]">Update</button>
+                </div>
+            </div>
 
-        <div class="bg-white p-6 rounded-lg shadow border-l-4 border-red-600">
-            <h2 class="text-xl font-bold mb-4 text-red-600 uppercase italic">Offer of the Day 📢</h2>
-            <div class="flex gap-2">
-                <input type="text" id="offerText" placeholder="Aaj ka offer yahan likhein..." class="flex-grow p-2 border rounded">
-                <button onclick="updateOffer()" class="bg-red-600 text-white px-6 py-2 rounded font-bold uppercase text-xs">Update</button>
+            <div class="admin-card">
+                <h2 class="text-lg font-black text-green-500 uppercase italic mb-4 italic">📲 GPay QR URL</h2>
+                <div class="flex gap-2">
+                    <input type="text" id="qrUrlInput" placeholder="Paste Image Link..." class="glass-input">
+                    <button onclick="updateQR()" class="bg-green-600 px-6 py-3 rounded-xl font-black uppercase text-[10px]">Save</button>
+                </div>
             </div>
         </div>
 
         <div class="grid md:grid-cols-2 gap-6">
-            <div class="bg-white p-6 rounded-lg shadow border-l-4 border-green-500">
-                <h2 class="text-xl font-bold mb-4 text-green-600 uppercase italic">Wallet Credit 💰</h2>
+            <div class="admin-card border-l-4 border-green-600">
+                <h2 class="text-lg font-black text-green-600 uppercase italic mb-4">💰 Recharge Wallet</h2>
                 <div class="space-y-3">
-                    <input type="text" id="walletPhone" placeholder="User Mobile Number" class="w-full p-2 border rounded">
-                    <input type="number" id="walletAmount" placeholder="Amount (₹)" class="w-full p-2 border rounded">
-                    <button onclick="updateWallet()" class="w-full bg-green-600 text-white py-2 rounded font-bold uppercase text-xs">Add Money</button>
+                    <input type="text" id="walletPhone" placeholder="User Mobile Number" class="glass-input">
+                    <input type="number" id="walletAmount" placeholder="Amount (₹)" class="glass-input">
+                    <button onclick="updateWallet()" class="w-full bg-green-600 py-3 rounded-xl font-black uppercase text-[10px]">Recharge Now</button>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-lg shadow border-l-4 border-blue-500">
-                <h2 class="text-xl font-bold mb-4 text-blue-600 uppercase italic">Create Voucher 🎟️</h2>
+            <div class="admin-card border-l-4 border-blue-600">
+                <h2 class="text-lg font-black text-blue-600 uppercase italic mb-4">🎟️ Create Voucher</h2>
                 <div class="space-y-3">
-                    <input type="text" id="vCode" placeholder="Code (e.g. WAFFLE50)" class="w-full p-2 border rounded">
-                    <input type="number" id="vDiscount" placeholder="Discount Value" class="w-full p-2 border rounded">
-                    <button onclick="createVoucher()" class="w-full bg-blue-600 text-white py-2 rounded font-bold uppercase text-xs">Generate</button>
+                    <input type="text" id="vCode" placeholder="Code (e.g. CRUNCHY20)" class="glass-input">
+                    <input type="number" id="vDiscount" placeholder="Discount (₹)" class="glass-input">
+                    <button onclick="createVoucher()" class="w-full bg-blue-600 py-3 rounded-xl font-black uppercase text-[10px]">Generate</button>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow border-t-4 border-red-500">
-            <h2 class="text-xl font-bold mb-4 text-red-600 uppercase italic flex justify-between">
-                Customer Orders 📦
-                <button onclick="loadOrders()" class="text-[10px] bg-zinc-100 px-3 py-1 rounded text-zinc-600">Refresh</button>
-            </h2>
-            <div id="orderList" class="space-y-3 max-h-[400px] overflow-y-auto pr-2"></div>
+        <div class="admin-card">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-black text-red-600 uppercase italic">📦 Pending Orders</h2>
+                <button onclick="loadOrders()" class="text-[10px] bg-zinc-800 px-4 py-2 rounded-full font-bold uppercase">Refresh Orders</button>
+            </div>
+            <div id="orderList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[400px] overflow-y-auto"></div>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-xl font-bold mb-4 border-b pb-2 italic uppercase">Add New Waffle</h2>
-            <div class="space-y-4">
-                <input type="text" id="wName" placeholder="Waffle Name" class="w-full p-2 border rounded">
-                <input type="number" id="wPrice" placeholder="Price" class="w-full p-2 border rounded">
-                <input type="text" id="wDesc" placeholder="Description" class="w-full p-2 border rounded">
-                <input type="text" id="wImg" placeholder="Image URL" class="w-full p-2 border rounded">
-                <button onclick="addWaffle()" class="w-full bg-green-600 text-white py-3 rounded font-bold uppercase tracking-widest">ADD TO MENU</button>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="admin-card">
+                <h2 class="text-xl font-black text-blue-500 uppercase italic mb-6">Add New Waffle</h2>
+                <div class="space-y-4">
+                    <input type="text" id="wName" placeholder="Name" class="glass-input">
+                    <input type="number" id="wPrice" placeholder="Price" class="glass-input">
+                    <input type="text" id="wImg" placeholder="Image URL" class="glass-input">
+                    <button onclick="addWaffle()" class="w-full bg-blue-600 py-3 rounded-xl font-black uppercase text-[10px]">Add to Menu</button>
+                </div>
+                <div class="mt-8 pt-6 border-t border-zinc-800">
+                    <button onclick="loadWafflesForDelete()" class="w-full border border-zinc-800 py-2 rounded-lg text-[10px] font-bold uppercase mb-4">Load Menu to Delete</button>
+                    <div id="deleteList" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h2 class="text-xl font-black text-red-600 uppercase italic mb-6">📩 Customer Inbox</h2>
+                <div id="messageList" class="space-y-4 max-h-[500px] overflow-y-auto pr-2"></div>
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-xl font-bold mb-4 border-b pb-2 italic uppercase">Manage Menu</h2>
-            <button onclick="loadWafflesForDelete()" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 text-xs font-bold uppercase tracking-widest">Load Menu</button>
-            <div id="deleteList" class="space-y-2"></div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow border-t-4 border-yellow-500">
-            <h2 class="text-xl font-bold mb-4 text-yellow-600 uppercase italic">Team & Business Settings</h2>
-            <div class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="ceoName" placeholder="CEO Name" class="p-2 border rounded">
-                    <input type="text" id="ceoPhoto" placeholder="CEO Photo URL" class="p-2 border rounded">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="tm1Name" placeholder="Manager Name" class="p-2 border rounded">
-                    <input type="text" id="tm1Photo" placeholder="Manager Photo URL" class="p-2 border rounded">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="tm2Name" placeholder="Chef Name" class="p-2 border rounded">
-                    <input type="text" id="tm2Photo" placeholder="Chef Photo URL" class="p-2 border rounded">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="phone" placeholder="Business Phone (e.g. 91...)" class="p-2 border rounded">
-                    <input type="text" id="gmail" placeholder="Official Gmail ID" class="p-2 border rounded">
-                </div>
-                <textarea id="journey" placeholder="Our Journey Text..." class="w-full p-2 border rounded h-24"></textarea>
-                <button onclick="updateAbout()" class="w-full bg-yellow-500 text-white py-3 rounded font-bold uppercase tracking-widest">Update Settings</button>
-            </div>
-        </div>
-
-        <div class="p-6 bg-zinc-900 rounded-[2.5rem] border border-zinc-800 shadow-2xl text-white">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-black text-blue-500 uppercase italic tracking-tighter">Registered Users 👤</h2>
-                <button onclick="loadUsers()" class="text-[10px] bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-full uppercase font-bold transition-all">Show Users</button>
-            </div>
-            <div id="userList" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-2"></div>
-        </div>
-
-        <div class="p-6 bg-zinc-900 rounded-[2.5rem] border border-zinc-800 text-white shadow-2xl">
-            <h2 class="text-2xl font-black text-green-500 uppercase italic mb-4">Update GPay QR Code 📲</h2>
-            <div class="space-y-4">
-                <input type="text" id="qrUrlInput" placeholder="Paste QR Image URL" class="w-full bg-black border border-zinc-800 p-3 rounded-xl text-white">
-                <button onclick="updateQR()" class="w-full bg-green-600 py-3 rounded-xl font-black uppercase">Save QR Code</button>
-            </div>
-        </div>
-
-        <div class="p-6 bg-zinc-900 rounded-[2.5rem] border border-zinc-800 text-white shadow-2xl">
-            <h2 class="text-2xl font-black italic text-red-600 mb-2 uppercase">Live Logo Designer</h2>
-            <div class="grid md:grid-cols-2 gap-10 mt-6">
+        <div class="admin-card">
+            <h2 class="text-xl font-black italic text-red-600 mb-6 uppercase">Live Logo Designer</h2>
+            <div class="grid md:grid-cols-2 gap-10">
                 <div class="space-y-8">
                     <div>
-                        <label class="block text-xs uppercase text-zinc-400 mb-4 font-bold">Logo Width</label>
-                        <input type="range" id="wSlider" min="50" max="600" value="200" class="w-full h-2 bg-zinc-800 rounded-lg accent-red-600">
-                        <p class="text-right text-red-600 font-bold mt-2" id="wVal">200px</p>
+                        <label class="block text-[10px] uppercase text-zinc-400 mb-4 font-bold">Logo Size (Width)</label>
+                        <input type="range" id="wSlider" min="50" max="600" value="200" class="w-full accent-red-600">
+                        <p id="wVal" class="text-right text-red-600 font-bold mt-2 text-xs">200px</p>
                     </div>
-                    <button onclick="saveLayout()" class="w-full bg-red-600 py-4 rounded-2xl font-black uppercase">Save Final Layout</button>
+                    <button onclick="saveLayout()" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase text-xs">Save Final Layout</button>
                 </div>
                 <div class="relative h-64 bg-black rounded-3xl border-2 border-dashed border-zinc-800 flex items-center justify-center overflow-hidden" id="adminBoundary">
-                    <img id="previewLogo" src="/images/logo.png" class="absolute w-[200px] cursor-move">
+                    <img id="previewLogo" src="/images/logo.png" class="absolute cursor-move" style="width: 200px;">
                 </div>
             </div>
         </div>
 
-        <div class="p-6 bg-zinc-900 rounded-[2.5rem] border border-zinc-800 text-white shadow-2xl">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-black text-red-600 uppercase italic tracking-tighter">Customer Inbox 📩</h2>
-                <button onclick="loadMessages()" class="text-[10px] bg-zinc-800 text-white px-4 py-2 rounded-full uppercase font-bold">Refresh Inbox</button>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="admin-card">
+                <h2 class="text-xl font-black text-zinc-400 uppercase italic mb-6 italic">👥 User Database</h2>
+                <button onclick="loadUsers()" class="w-full border border-zinc-800 py-2 rounded-lg text-[10px] font-bold uppercase mb-4">Show All Users</button>
+                <div id="userList" class="grid grid-cols-1 gap-2"></div>
             </div>
-            <div id="messageList" class="space-y-4 max-h-[500px] overflow-y-auto pr-2"></div>
+
+            <div class="admin-card">
+                <h2 class="text-xl font-black text-yellow-500 uppercase italic mb-6 italic">🏢 Business Info</h2>
+                <div class="space-y-4">
+                    <input type="text" id="phone" placeholder="Contact Phone" class="glass-input">
+                    <input type="text" id="gmail" placeholder="Official Email" class="glass-input">
+                    <textarea id="journey" placeholder="Journey Text..." class="glass-input h-20"></textarea>
+                    <button onclick="updateAbout()" class="w-full bg-yellow-600 py-3 rounded-xl font-black uppercase text-[10px]">Save Info</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
     <script>
-        const passInput = document.getElementById('adminPass');
+        let adminPass = "";
         let posX = 0, posY = 0, currentWidth = 200;
 
-        // LIST 2: Offer Update
+        function checkAuth() {
+            const val = document.getElementById('entryPass').value;
+            if(val === "Crunchy123") {
+                adminPass = val;
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('admin-content').style.display = 'block';
+                loadOrders(); loadMessages();
+            } else {
+                document.getElementById('lock-msg').classList.remove('hidden');
+                setTimeout(() => document.getElementById('lock-msg').classList.add('hidden'), 2000);
+            }
+        }
+
+        async function adminFetch(url, body, method = 'POST') {
+            return await fetch(url, {
+                method: method,
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ adminPassword: adminPass, ...body })
+            });
+        }
+
         async function updateOffer() {
-            const res = await fetch('/api/admin/update-offer', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ adminPassword: passInput.value, text: document.getElementById('offerText').value })
-            });
-            if(res.ok) alert("Offer updated!"); else alert("Error!");
+            const res = await adminFetch('/api/admin/update-offer', { text: document.getElementById('offerText').value });
+            if(res.ok) alert("Offer Updated!");
         }
 
-        // WALLET
-        async function updateWallet() {
-            const data = { adminPassword: passInput.value, phone: document.getElementById('walletPhone').value, amount: Number(document.getElementById('walletAmount').value) };
-            const res = await fetch('/api/admin/update-wallet', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
-            if(res.ok) alert("Wallet Updated!"); else alert("Error!");
-        }
-
-        // QR UPDATE
         async function updateQR() {
-            const res = await fetch('/api/save-qr', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ adminPassword: passInput.value, qrUrl: document.getElementById('qrUrlInput').value })
-            });
-            if(res.ok) alert("QR Code Updated!"); else alert("Error!");
+            const res = await adminFetch('/api/save-qr', { qrUrl: document.getElementById('qrUrlInput').value });
+            if(res.ok) alert("QR URL Saved!");
         }
 
-        // LOAD ORDERS
-        async function loadOrders() {
-            const res = await fetch('/api/admin/all-orders', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ adminPassword: passInput.value })
+        async function updateWallet() {
+            const res = await adminFetch('/api/admin/update-wallet', { 
+                phone: document.getElementById('walletPhone').value, 
+                amount: Number(document.getElementById('walletAmount').value) 
             });
-            if(!res.ok) return;
+            if(res.ok) alert("Wallet Updated!");
+        }
+
+        async function createVoucher() {
+            const res = await adminFetch('/api/admin/create-voucher', { 
+                code: document.getElementById('vCode').value, 
+                discount: Number(document.getElementById('vDiscount').value) 
+            });
+            if(res.ok) alert("Voucher Created!");
+        }
+
+        async function loadOrders() {
+            const res = await adminFetch('/api/admin/all-orders', {});
             const orders = await res.json();
             document.getElementById('orderList').innerHTML = orders.map(o => `
-                <div class="bg-gray-50 p-4 rounded-xl border flex justify-between items-center shadow-sm">
-                    <div>
-                        <div class="flex gap-2 text-[8px] font-black mb-1">
-                            <span class="${o.status === 'Approved' ? 'text-green-600' : 'text-red-600'} uppercase">${o.status}</span>
-                            <span>${new Date(o.date).toLocaleDateString()}</span>
-                        </div>
-                        <h4 class="font-black text-zinc-800 uppercase">${o.username}</h4>
-                        <p class="text-[10px] text-zinc-500 italic">${o.items.map(i => i.name).join(', ')}</p>
-                        <p class="text-[10px] text-zinc-400 mt-1">Wallet: -₹${o.walletDeducted} | Cash: ₹${o.cashPaid}</p>
-                        <p class="text-[9px] text-zinc-400 font-mono">TX ID: ${o.transactionId}</p>
+                <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
+                    <div class="flex justify-between text-[8px] font-bold mb-2">
+                        <span class="text-red-600 uppercase italic">${o.status}</span>
+                        <span class="text-zinc-600">${new Date(o.date).toLocaleDateString()}</span>
                     </div>
-                    ${o.status === 'Pending' ? `<button onclick="approveOrder('${o._id}')" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-[10px]">APPROVE</button>` : '✅'}
+                    <h3 class="font-black text-xs uppercase">${o.username}</h3>
+                    <p class="text-[9px] text-zinc-500 mt-1 italic">${o.items.map(i => i.name).join(', ')}</p>
+                    <div class="mt-4 flex justify-between items-end border-t border-zinc-800 pt-2">
+                        <div class="text-[9px]">
+                            <p class="text-green-500 font-bold italic">Cash: ₹${o.cashPaid}</p>
+                            <p class="text-zinc-600">Wallet: ₹${o.walletDeducted}</p>
+                        </div>
+                        ${o.status === 'Pending' ? `<button onclick="approveOrder('${o._id}')" class="bg-green-600 px-3 py-1 rounded text-[8px] font-black uppercase italic">Approve</button>` : '✅'}
+                    </div>
                 </div>`).join('');
         }
 
         async function approveOrder(id) {
-            const res = await fetch('/api/admin/approve-order', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ adminPassword: passInput.value, orderId: id })
-            });
-            if(res.ok) { alert("Approved!"); loadOrders(); }
+            const res = await adminFetch('/api/admin/approve-order', { orderId: id });
+            if(res.ok) loadOrders();
         }
 
-        // MESSAGES & REPLY
         async function loadMessages() {
-            const res = await fetch('/api/admin/get-messages', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ adminPassword: passInput.value }) });
-            if(!res.ok) return alert("Wrong Password!");
+            const res = await adminFetch('/api/admin/get-messages', {});
             const msgs = await res.json();
             document.getElementById('messageList').innerHTML = msgs.map(m => `
-                <div class="bg-black p-4 rounded-2xl border border-zinc-800">
-                    <p class="text-red-600 font-bold text-xs uppercase">${m.username}</p>
-                    <p class="text-sm my-2 text-zinc-300">"${m.message}"</p>
-                    <div class="flex gap-2">
-                        <input type="text" id="reply-${m._id}" placeholder="Reply..." class="flex-grow bg-zinc-800 p-2 rounded text-xs">
-                        <button onclick="replyToMsg('${m._id}')" class="bg-blue-600 px-3 py-1 rounded text-[10px] font-bold">REPLY</button>
+                <div class="bg-black p-4 rounded-xl border border-zinc-900">
+                    <p class="text-[9px] text-red-600 font-bold mb-1 uppercase">${m.username}</p>
+                    <p class="text-xs text-zinc-300">"${m.message}"</p>
+                    <div class="mt-3 flex gap-2">
+                        <input type="text" id="reply-${m._id}" placeholder="Reply..." class="flex-grow bg-zinc-900 p-2 rounded text-[10px] border-none">
+                        <button onclick="replyToMsg('${m._id}')" class="bg-blue-600 px-3 rounded text-[8px] font-bold">REPLY</button>
                     </div>
-                    ${m.reply ? `<p class="mt-2 text-[10px] text-green-500">Sent: ${m.reply}</p>` : ''}
+                    ${m.reply ? `<p class="mt-2 text-[8px] text-green-500 italic font-bold">Sent: ${m.reply}</p>` : ''}
                 </div>`).join('');
         }
 
         async function replyToMsg(id) {
-            const replyText = document.getElementById(`reply-${id}`).value;
-            const res = await fetch('/api/admin/reply-message', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ adminPassword: passInput.value, msgId: id, reply: replyText }) });
-            if(res.ok) { alert("Reply sent!"); loadMessages(); }
+            const res = await adminFetch('/api/admin/reply-message', { msgId: id, reply: document.getElementById(`reply-${id}`).value });
+            if(res.ok) { alert("Reply Sent!"); loadMessages(); }
         }
 
-        // WAFFLE MANAGEMENT
         async function addWaffle() {
-            const data = { adminPassword: passInput.value, name: document.getElementById('wName').value, price: document.getElementById('wPrice').value, description: document.getElementById('wDesc').value, image: document.getElementById('wImg').value };
-            const res = await fetch('/api/waffles', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            const res = await adminFetch('/api/waffles', { 
+                name: document.getElementById('wName').value, 
+                price: document.getElementById('wPrice').value, 
+                image: document.getElementById('wImg').value 
+            });
             if(res.ok) { alert("Added!"); location.reload(); }
         }
 
@@ -237,62 +248,53 @@
             const res = await fetch('/api/waffles');
             const waffles = await res.json();
             document.getElementById('deleteList').innerHTML = waffles.map(w => `
-                <div class="flex justify-between items-center p-3 bg-gray-50 border rounded text-black">
-                    <span class="font-bold text-xs">${w.name}</span>
-                    <button onclick="deleteWaffle('${w._id}')" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">DELETE</button>
+                <div class="flex justify-between items-center p-2 bg-zinc-900 rounded-lg text-[9px] uppercase">
+                    <span>${w.name} (₹${w.price})</span>
+                    <button onclick="deleteWaffle('${w._id}')" class="text-red-500 font-bold">DELETE</button>
                 </div>`).join('');
         }
 
         async function deleteWaffle(id) {
-            const res = await fetch('/api/waffles/' + id, { method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ adminPassword: passInput.value }) });
+            const res = await adminFetch('/api/waffles/' + id, {}, 'DELETE');
             if(res.ok) loadWafflesForDelete();
         }
 
-        // ABOUT & USERS
-        async function updateAbout() {
-            const data = {
-                adminPassword: passInput.value, ceoName: document.getElementById('ceoName').value, ceoPhoto: document.getElementById('ceoPhoto').value,
-                tm1Name: document.getElementById('tm1Name').value, tm1Photo: document.getElementById('tm1Photo').value,
-                tm2Name: document.getElementById('tm2Name').value, tm2Photo: document.getElementById('tm2Photo').value,
-                phone: document.getElementById('phone').value, gmail: document.getElementById('gmail').value, journey: document.getElementById('journey').value
-            };
-            const res = await fetch('/api/about', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
-            if(res.ok) alert("Business Info Updated!");
-        }
-
         async function loadUsers() {
-            const res = await fetch('/api/admin/get-users', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ adminPassword: passInput.value }) });
-            if(!res.ok) return;
+            const res = await adminFetch('/api/admin/get-users', {});
             const users = await res.json();
             document.getElementById('userList').innerHTML = users.map(u => `
-                <div class="bg-black p-4 rounded-2xl border border-zinc-800">
-                    <p class="font-bold text-red-600 uppercase text-xs">${u.username}</p>
-                    <p class="text-zinc-500 text-[10px]">${u.phone}</p>
-                    <div class="flex justify-between mt-2 font-black text-[10px]">
-                        <span class="text-green-500">₹${u.walletBalance}</span>
-                        <span class="text-yellow-500">${u.loyaltyPoints} Pts</span>
-                    </div>
+                <div class="bg-zinc-900 p-3 rounded-xl flex justify-between items-center text-[10px]">
+                    <div><p class="font-black text-red-600">${u.username}</p><p class="text-zinc-600">${u.phone}</p></div>
+                    <div class="text-right"><p class="text-green-500 font-bold">₹${u.walletBalance}</p><p class="text-yellow-500 font-bold">${u.loyaltyPoints} Pts</p></div>
                 </div>`).join('');
         }
 
-        // LOGO DESIGNER (Restored)
+        async function updateAbout() {
+            const res = await adminFetch('/api/about', { 
+                phone: document.getElementById('phone').value, 
+                gmail: document.getElementById('gmail').value,
+                journey: document.getElementById('journey').value
+            });
+            if(res.ok) alert("Info Updated!");
+        }
+
+        // LOGO DESIGNER LOGIC
         const wSlider = document.getElementById('wSlider');
         wSlider.oninput = function() {
             currentWidth = this.value;
             document.getElementById('wVal').innerText = currentWidth + "px";
             document.getElementById('previewLogo').style.width = currentWidth + "px";
         };
+
         interact('#previewLogo').draggable({
             listeners: { move(event) { posX += event.dx; posY += event.dy; event.target.style.transform = `translate(${posX}px, ${posY}px)`; } },
             modifiers: [ interact.modifiers.restrictRect({ restriction: '#adminBoundary', endOnly: true }) ]
         });
+
         async function saveLayout() {
-            const res = await fetch('/api/save-logo', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ adminPassword: passInput.value, width: currentWidth + "px", x: posX + "px", y: posY + "px" }) });
+            const res = await adminFetch('/api/save-logo', { width: currentWidth + "px", x: posX + "px", y: posY + "px" });
             if(res.ok) alert("Logo Layout Saved!");
         }
-
-        // Init
-        loadOrders();
     </script>
 </body>
 </html>
