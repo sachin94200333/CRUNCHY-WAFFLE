@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agents Hub | Railway Community</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        .rail-blue { background-color: #002366; }
+        .rail-yellow { color: #FFD700; }
+        .tab-active { border-bottom: 4px solid #FFD700; color: #FFD700; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <nav class="rail-blue text-white p-4 sticky top-0 z-50 shadow-2xl">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-black italic">AGENTS HUB 🚂</h1>
+            <div class="flex gap-3 text-[10px] md:text-sm font-bold">
+                <button onclick="showPage('groups')" id="btn-groups" class="tab-active py-1">GROUPS</button>
+                <button onclick="showPage('blacklist')" id="btn-blacklist" class="py-1">BLACKLIST</button>
+                <button onclick="showPage('trusted')" id="btn-trusted" class="py-1">TRUSTED LIST</button>
+                <button onclick="showPage('admin')" class="opacity-30">ADMIN</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-4 max-w-6xl">
+        
+        <div id="page-groups" class="page-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-black text-blue-900">RAILWAY GROUP DIRECTORY</h2>
+                <button onclick="openModal('modal-add-group')" class="bg-blue-800 text-white px-4 py-2 rounded-lg font-bold text-xs">+ ADD GROUP</button>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-200 text-blue-900 text-xs uppercase">
+                        <tr>
+                            <th class="p-4">S.No</th>
+                            <th class="p-4">Group Name</th>
+                            <th class="p-4">Members</th>
+                            <th class="p-4">Added Date</th>
+                            <th class="p-4 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="groupTableBody" class="text-sm"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="page-blacklist" class="page-content hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-black text-red-700 uppercase italic">Chor / Scammer List 🚫</h2>
+                <button onclick="openModal('modal-add-blacklist')" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-xs">+ REPORT SCAMMER</button>
+            </div>
+            <div class="grid gap-4" id="blacklistCards"></div>
+        </div>
+
+        <div id="page-trusted" class="page-content hidden text-center">
+            <h2 class="text-xl font-black text-green-700 mb-2 uppercase">Trusted Working Persons ✅</h2>
+            <p class="text-xs text-gray-500 mb-6 italic">Rating dene ke liye button par click karein.</p>
+            <button onclick="openModal('modal-add-trusted')" class="bg-green-600 text-white px-6 py-2 rounded-full font-bold text-sm mb-6">+ ADD MY NUMBER AS TRUSTED</button>
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" id="trustedCards"></div>
+        </div>
+
+        <div id="page-admin" class="page-content hidden max-w-md mx-auto py-10">
+            <input type="password" id="adminPass" placeholder="Admin Password" class="w-full p-4 border rounded-xl text-center mb-4">
+            <button onclick="verifyAdmin()" class="w-full bg-black text-white py-3 rounded-xl font-bold">LOGIN ADMIN</button>
+            <div id="admin-data" class="hidden mt-10 space-y-6">
+                <h3 class="font-bold text-red-600 italic underline">Pending Approvals:</h3>
+                <div id="pendingGroups" class="space-y-2 text-xs"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="modal-add-group" class="fixed inset-0 bg-black/80 hidden z-[100] flex items-center justify-center p-4">
+        <div class="bg-white p-6 rounded-2xl w-full max-w-sm">
+            <h3 class="text-lg font-black mb-4">ADD RAILWAY GROUP</h3>
+            <div class="space-y-3">
+                <input type="text" id="gName" placeholder="Group Name" class="w-full border p-3 rounded-lg text-sm outline-none">
+                <input type="url" id="gLink" placeholder="WhatsApp Link" class="w-full border p-3 rounded-lg text-sm outline-none">
+                <input type="number" id="gMembers" placeholder="Approx Members" class="w-full border p-3 rounded-lg text-sm outline-none">
+                <button onclick="submitGroup()" class="w-full bg-blue-900 text-white py-3 rounded-lg font-bold">SUBMIT FOR REVIEW</button>
+                <button onclick="closeModal('modal-add-group')" class="w-full text-gray-400 text-xs mt-2">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-add-blacklist" class="fixed inset-0 bg-black/80 hidden z-[100] flex items-center justify-center p-4">
+        <div class="bg-white p-6 rounded-2xl w-full max-w-sm border-t-8 border-red-600">
+            <h3 class="text-lg font-black text-red-600 mb-4">REPORT A CHOR / SCAMMER</h3>
+            <div class="space-y-3">
+                <input type="text" id="blNum" placeholder="Scammer Mobile Number" class="w-full border p-3 rounded-lg text-sm outline-none">
+                <textarea id="blReason" placeholder="Kyu report kar rahe hain? (Karan)" class="w-full border p-3 rounded-lg text-sm h-24 outline-none"></textarea>
+                <input type="url" id="blProof" placeholder="Proof Screenshot Link (Imbb/Drive)" class="w-full border p-3 rounded-lg text-sm outline-none">
+                <button onclick="submitBlacklist()" class="w-full bg-red-600 text-white py-3 rounded-lg font-bold uppercase">Public Report</button>
+                <button onclick="closeModal('modal-add-blacklist')" class="w-full text-gray-400 text-xs mt-2">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-add-trusted" class="fixed inset-0 bg-black/80 hidden z-[100] flex items-center justify-center p-4">
+        <div class="bg-white p-6 rounded-2xl w-full max-w-sm">
+            <h3 class="text-lg font-black text-green-700 mb-4">BECOME A TRUSTED AGENT</h3>
+            <div class="space-y-3">
+                <input type="text" id="tName" placeholder="Aapka Naam" class="w-full border p-3 rounded-lg text-sm outline-none">
+                <input type="text" id="tPhone" placeholder="Mobile Number" class="w-full border p-3 rounded-lg text-sm outline-none">
+                <button onclick="submitTrusted()" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold">SUBMIT MY PROFILE</button>
+                <button onclick="closeModal('modal-add-trusted')" class="w-full text-gray-400 text-xs mt-2">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SB_URL = "https://bwozxpcmpciftudqcyuw.supabase.co";
+        const SB_KEY = "EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3b3p4cGNtcGNpZnR1ZHFjeXV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwNTY2NzIsImV4cCI6MjA4MzYzMjY3Mn0.AO_daHPVF2Pv8AqEASh3851KeYrBVd2cQpUDV5QVfrU";
+        const sb = supabase.createClient(SB_URL, SB_KEY);
+
+        function showPage(id) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active'));
+            document.getElementById('page-' + id).classList.remove('hidden');
+            document.getElementById('btn-' + id).classList.add('tab-active');
+            if(id === 'groups') loadGroups();
+            if(id === 'blacklist') loadBlacklist();
+            if(id === 'trusted') loadTrusted();
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        // --- GROUPS LOGIC ---
+        async function loadGroups() {
+            const { data } = await sb.from('railway_groups').select('*').eq('is_approved', true).order('created_at', { ascending: true });
+            const tbody = document.getElementById('groupTableBody');
+            tbody.innerHTML = data.map((g, index) => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-4 font-bold text-gray-400">${index + 1}</td>
+                    <td class="p-4 font-black text-blue-900">${g.group_name}</td>
+                    <td class="p-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold">${g.members} Members</span></td>
+                    <td class="p-4 text-[10px] text-gray-500 font-bold uppercase">${new Date(g.created_at).toLocaleDateString('en-IN')}</td>
+                    <td class="p-4 text-center"><a href="${g.link}" target="_blank" class="bg-blue-800 text-white px-4 py-1 rounded-full text-[10px] font-black italic">JOIN</a></td>
+                </tr>
+            `).join('');
+        }
+
+        async function submitGroup() {
+            const name = document.getElementById('gName').value;
+            const link = document.getElementById('gLink').value;
+            const members = document.getElementById('gMembers').value;
+            if(!name || !link) return alert("Details bharein!");
+            await sb.from('railway_groups').insert([{ group_name: name, link: link, members: parseInt(members || 0), is_approved: false }]);
+            alert("Sent for Admin Approval!");
+            closeModal('modal-add-group');
+        }
+
+        // --- BLACKLIST LOGIC ---
+        async function loadBlacklist() {
+            const { data } = await sb.from('blacklist').select('*').order('created_at', { ascending: false });
+            document.getElementById('blacklistCards').innerHTML = data.map(b => `
+                <div class="bg-white p-4 rounded-xl border-l-8 border-red-600 shadow-md flex flex-col md:flex-row justify-between items-center">
+                    <div>
+                        <p class="text-red-600 font-black text-lg">⚠️ SCAMMER: ${b.phone_number}</p>
+                        <p class="text-xs font-bold text-gray-600 italic mt-1">Reason: ${b.reason}</p>
+                    </div>
+                    ${b.proof_link ? `<a href="${b.proof_link}" target="_blank" class="mt-2 md:mt-0 bg-gray-800 text-white px-4 py-2 rounded text-[10px] font-black uppercase tracking-wider">View Proof (Screenshot)</a>` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function submitBlacklist() {
+            const num = document.getElementById('blNum').value;
+            const reason = document.getElementById('blReason').value;
+            const proof = document.getElementById('blProof').value;
+            if(!num || !reason || !proof) return alert("Proof Link aur Reason zaroori hai!");
+            await sb.from('blacklist').insert([{ phone_number: num, reason: reason, proof_link: proof }]);
+            alert("Report Added to Chor List!");
+            loadBlacklist();
+            closeModal('modal-add-blacklist');
+        }
+
+        // --- TRUSTED LIST & RATING LOGIC ---
+        async function loadTrusted() {
+            const { data } = await sb.from('trusted_list').select('*').order('trust_count', { ascending: false });
+            document.getElementById('trustedCards').innerHTML = data.map(t => `
+                <div class="bg-white p-6 rounded-2xl shadow-xl border-t-4 border-green-500">
+                    <h4 class="text-xl font-black text-gray-800">${t.name}</h4>
+                    <p class="text-blue-600 font-mono font-bold mt-1 tracking-widest">${t.phone}</p>
+                    <div class="mt-6 flex justify-around items-center border-t pt-4">
+                        <button onclick="rate('${t.id}', 'trust')" class="flex flex-col items-center group">
+                            <span class="text-2xl group-hover:scale-125 transition">✅</span>
+                            <span class="text-[10px] font-black text-green-600 mt-1 uppercase italic underline">${t.trust_count} Trusted</span>
+                        </button>
+                        <button onclick="rate('${t.id}', 'distrust')" class="flex flex-col items-center group">
+                            <span class="text-2xl group-hover:scale-125 transition">❌</span>
+                            <span class="text-[10px] font-black text-red-600 mt-1 uppercase italic underline">${t.distrust_count} Fake</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function rate(id, type) {
+            const storageKey = `rated_${id}`;
+            if(localStorage.getItem(storageKey)) return alert("Aapne pehle hi rate kar diya hai!");
+            
+            const field = type === 'trust' ? 'trust_count' : 'distrust_count';
+            const { data } = await sb.from('trusted_list').select(field).eq('id', id).single();
+            await sb.from('trusted_list').update({ [field]: data[field] + 1 }).eq('id', id);
+            
+            localStorage.setItem(storageKey, 'true');
+            loadTrusted();
+        }
+
+        async function submitTrusted() {
+            const name = document.getElementById('tName').value;
+            const phone = document.getElementById('tPhone').value;
+            if(!name || !phone) return alert("Naam aur Number bharein!");
+            await sb.from('trusted_list').insert([{ name, phone }]);
+            alert("Aapka profile add ho gaya!");
+            loadTrusted();
+            closeModal('modal-add-trusted');
+        }
+
+        // --- ADMIN LOGIN ---
+        function verifyAdmin() {
+            if(document.getElementById('adminPass').value === "1234") {
+                document.getElementById('admin-data').classList.remove('hidden');
+                loadPending();
+            } else alert("Wrong!");
+        }
+
+        async function loadPending() {
+            const { data } = await sb.from('railway_groups').select('*').eq('is_approved', false);
+            document.getElementById('pendingGroups').innerHTML = data.map(g => `
+                <div class="p-2 bg-gray-50 flex justify-between items-center border rounded">
+                    <span>${g.group_name}</span>
+                    <button onclick="approve('${g.id}')" class="bg-green-500 text-white px-2 py-1 rounded">Approve</button>
+                </div>
+            `).join('');
+        }
+
+        async function approve(id) { await sb.from('railway_groups').update({ is_approved: true }).eq('id', id); loadPending(); }
+
+        loadGroups();
+    </script>
+</body>
+</html>
